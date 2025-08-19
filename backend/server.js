@@ -7,14 +7,13 @@ import mongoose from 'mongoose';
 dotenv.config();
 
 connectDB(); // ← esta línea sí conecta usando tu configuración personalizada
-mongoose.connect("mongodb+srv://randysimancamercado2:Valeria1324@clustermiapp.z0bbfnk.mongodb.net/baseDeDatosHV", {useNewUrlParser: true})
 
 
 // usar estáticos cuando esta en modo produccion //
 if(process.env.NODE_ENV === 'production') {
-  app.use(express.static('frontend/build'));
+  app.use(express.static('Frontend/build'));
   app.get("*", (req, res) => {
-      res.sendFile((__dirname + "/frontend/build/index.html"));
+      res.sendFile((__dirname + "/Frontend/build/index.html"));
   })
   }
   
