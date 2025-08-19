@@ -6,28 +6,45 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "estructura": "npx tree-cli -L 3 -I \"node_modules,dist,.git\" > estructura.txt",
+    "audit:labels": "node tools/audits/accessibility/auditLabels.js",
+    "repair:labels": "node tools/fixers/accessibility/repairLabels.js"
   },
   "dependencies": {
-    "@vitejs/plugin-vue": "^6.0.1",
-    "vite": "^7.0.4",
-    "vue": "^3.5.18",
-    "vue-router": "^4.5.1",
+    "@react-pdf/renderer": "^4.3.0",
     "axios": "^1.10.0",
-    "pinia": "^3.0.3",
-    "sweetalert2": "^11.22.2",
-    "vue-sidebar-menu": "^5.7.0",
-    "vue-toastification": "^2.0.0-rc.5",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "express-validator": "^7.2.1",
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
     "html2pdf.js": "^0.10.3",
-    "@react-pdf/renderer": "^4.3.0",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.0"
+    "jsonwebtoken": "^9.0.2",
+    "jspdf": "^3.0.1",
+    "mongoose": "^8.16.4",
+    "pdfkit": "^0.17.1",
+    "pinia": "^3.0.3",
+    "puppeteer": "^24.16.0",
+    "sweetalert2": "^11.22.2",
+    "vue": "^3.5.18",
+    "vue-router": "^4.5.1",
+    "vue-sidebar-menu": "^5.7.0",
+    "vue-toastification": "^2.0.0-rc.5",
+    "vite": "^7.0.4"
   },
   "devDependencies": {
     "@types/html2pdf.js": "^0.10.0",
     "@types/node": "^24.1.0",
+    "@vitejs/plugin-vue": "^6.0.0",
     "tree-cli": "^0.6.7"
-  }
+  },
+  "description": "This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.",
+  "main": "vite.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
