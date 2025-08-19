@@ -1,14 +1,22 @@
-// vite.config.js
+// Frontend/vite.config.js
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
   plugins: [vue()],
+  root: '.',
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: false,
+    emptyOutDir: true,
+  },
   server: {
     proxy: {
-      "/api": "http://localhost:3000",
+      "/api": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+      },
     },
   },
-
-  
 });
