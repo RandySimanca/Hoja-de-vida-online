@@ -1,6 +1,10 @@
 // backend/index.js
 
-import dotenv from "dotenv";
+import './app.js';
+
+console.log('🚀 Servidor iniciado desde index.js');
+
+/**import dotenv from "dotenv";
 dotenv.config();
 
 import express from "express";
@@ -37,3 +41,4 @@ app.use('/api/pdf', pdfRoutes);
 app.listen(3000, () => {
   console.log("✅ Servidor corriendo en puerto 3000");
 });
+*/
