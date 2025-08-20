@@ -1,55 +1,76 @@
 // backend/app.js - VERSIÓN MÍNIMA PARA DIAGNÓSTICO
+// backend/app.js - FULL & CORRECTED VERSION
 import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+
+import connectDB from "./config/db.js";
+import usuariosRoute from "./routes/usuarios.js";
+import loginRoute from "./routes/login.js";
+import datosPersonalesRoute from "./routes/datosPersonales.js";
+import formacionAcademicaRoute from "./routes/formacionAcademica.js";
+import hojaVidaRoute from "./routes/hojaVidaRoutes.js";
+import experienciaRoutes from "./routes/experiencia.js";
+import experienciaTotRoutes from "./routes/experienciaTot.js";
+import firmaServidorRoutes from "./routes/firmaServidor.js";
+import pdfRoutes from './routes/pdf.js';
+
+// --- Server Setup ---
+dotenv.config();
+const app = express();
+connectDB();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const app = express();
-
-console.log('🚀 Iniciando aplicación...');
-console.log('📁 __dirname:', __dirname);
-console.log('🌍 NODE_ENV:', process.env.NODE_ENV);
-console.log('🔧 PORT:', process.env.PORT);
-
-// Middlewares básicos
+// --- Middleware ---
+app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "../Frontend/dist")));
 
-// Ruta de prueba
-app.get('/api/test', (req, res) => {
-  res.json({ 
-    message: 'Backend funcionando', 
-    timestamp: new Date().toISOString(),
-    env: process.env.NODE_ENV 
-  });
-});
+// --- API Routes ---
+try {
+  console.log("Registering API routes...");
+  app.use("/api/usuarios", usuariosRoute);
+  app.use("/api/login", loginRoute);
+  // Note: The router in datosPersonales.js already includes "/datos-personales"
+  app.use("/api", datosPersonalesRoute); 
+  app.use("/api/formacion-academica", formacionAcademicaRoute);
+  // Note: The router in hojaVidaRoutes.js already includes "/hoja-de-vida"
+  app.use("/api", hojaVidaRoute);
+  app.use("/api/experiencia", experienciaRoutes);
+  app.use("/api/experiencia-tot", experienciaTotRoutes);
+  app.use("/api/firma-servidor", firmaServidorRoutes);
+  app.use('/api/pdf', pdfRoutes);
+  console.log("API routes registered successfully.");
+} catch (error) {
+  console.error("❌ Error registering API routes:", error);
+  process.exit(1); 
+}
 
-// Ruta para servir el frontend
+// --- Frontend Serving ---
+const frontendDistPath = path.resolve(__dirname, "../Frontend/dist");
+console.log(`Serving frontend static files from: ${frontendDistPath}`);
+app.use(express.static(frontendDistPath));
+
 app.get("*", (req, res) => {
-  const indexPath = path.resolve(__dirname, "../Frontend/dist", "index.html");
-  console.log('📄 Intentando servir:', indexPath);
-  
+  const indexPath = path.resolve(frontendDistPath, "index.html");
   res.sendFile(indexPath, (err) => {
     if (err) {
-      console.error('❌ Error sirviendo index.html:', err);
-      res.status(404).send(`
-        <h1>App en desarrollo</h1>
-        <p>Frontend path: ${indexPath}</p>
-        <p>Error: ${err.message}</p>
-        <p><a href="/api/test">Test Backend</a></p>
-      `);
+      console.error(`Error serving index.html from ${indexPath}`, err);
+      res.status(500).send("Error serving the application.");
     }
   });
 });
 
-const PORT = process.env.PORT || 3000;
+// --- Port and Server Start ---
+const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Servidor corriendo en puerto ${PORT}`);
+  console.log(`✅ Server running on port ${PORT}`);
 }).on('error', (err) => {
-  console.error('❌ Error iniciando servidor:', err);
+  console.error('❌ Server startup error:', err);
 });
 
 export default app;
