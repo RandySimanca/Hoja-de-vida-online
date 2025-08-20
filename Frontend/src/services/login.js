@@ -3,12 +3,12 @@ import api from "../api/axios";
 
 export const login = async (email, password) => {
   try {
-    const response = await api.post("http://localhost:3000/api/login", {
-        email: email, // el backend espera "correo"
-        password,
-      });
-      
-    
+    // Usamos la ruta relativa '/login' para que axios use la baseURL correcta.
+    // También enviamos 'correo' en lugar de 'email'.
+    const response = await api.post("/login", {
+      correo: email,
+      password,
+    });
     return response.data;
   } catch (err) {
     throw err.response?.data?.error || "Error de conexión";
