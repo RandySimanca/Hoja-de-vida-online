@@ -5,7 +5,7 @@ export const login = async (email, password) => {
   try {
     // Usamos la ruta relativa '/login' para que axios use la baseURL correcta.
     // También enviamos 'correo' en lugar de 'email'.
-    const response = await api.post("/", {
+    const response = await api.post("/login", {
       correo: email,
       password,
     });
