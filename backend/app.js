@@ -1,3 +1,21 @@
+// backend/app.js - FINAL WORKAROUND VERSION
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+import connectDB from "./config/db.js";
+import usuariosRoute from "./routes/usuarios.js";
+import loginRoute from "./routes/login.js";
+import datosPersonalesRoute from "./routes/datosPersonales.js";
+import formacionAcademicaRoute from "./routes/formacionAcademica.js";
+import hojaVidaRoute from "./routes/hojaVidaRoutes.js";
+import experienciaRoutes from "./routes/experiencia.js";
+import experienciaTotRoutes from "./routes/experienciaTot.js";
+import firmaServidorRoutes from "./routes/firmaServidor.js";
+import pdfRoutes from './routes/pdf.js';
+
 // --- Server Setup ---
 dotenv.config();
 const app = express();
