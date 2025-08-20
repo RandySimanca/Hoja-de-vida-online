@@ -17,9 +17,9 @@ router.get("/test", (req, res) => {
 });
 
 // POST principal
-router.post("/datos-personales", verificarJWT, crearDatosPersonales);
-router.get("/datos-personales", verificarJWT, obtenerDatosPersonales);
-router.put("/datos-personales", verificarJWT, actualizarDatosPersonales);
+router.post("/", verificarJWT, crearDatosPersonales);
+router.get("/", verificarJWT, obtenerDatosPersonales);
+router.put("/", verificarJWT, actualizarDatosPersonales);
 
 
 export default router;
