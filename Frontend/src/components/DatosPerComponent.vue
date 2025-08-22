@@ -196,7 +196,7 @@
                               <input
                                 type="text"
                                 id="dia-nac"
-                                class="form-control2"
+                                class="form-control"
                                 v-model="diaNac"
                               />
                         </div>
@@ -205,7 +205,7 @@
               <input
                 type="text"
                 id="mes-nac"
-                class="form-control2"
+                class="form-control"
                 v-model="mesNac"
               />
             </div>
@@ -214,7 +214,7 @@
               <input
                 type="text"
                 id="ano-nac"
-                class="form-control2"
+                class="form-control"
                 v-model="anoNac"
               />
             </div>
