@@ -607,8 +607,10 @@ form {
 }
 
 .col-2 {
-  flex: 10 0 10%;
+  flex: 1 1 calc(33.333% - 10px); /* Para 3 columnas con gap */
+  min-width: 100px;
 }
+
 
 .col-3 {
   flex: 0 0 31%;
@@ -816,6 +818,11 @@ form {
   .compoFirma {
     height: 250px;
   }
+ 
+  .col-2 {
+    flex: 1 1 100%;
+  }
+
 }
 
 /* Mobile muy pequeño - 320px y menor */
