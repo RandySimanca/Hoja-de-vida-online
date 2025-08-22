@@ -867,8 +867,3 @@ form {
 }
 </style>
   
-  .carta:last-child {
-    page-break-after: auto;
-  }
-}
-</style>
