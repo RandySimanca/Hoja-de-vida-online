@@ -188,7 +188,7 @@
       </div>
 
       <div class="form-row">
-        <div class="form-group col-2">
+       
           <label>FECHA Y LUGAR DE NACIMIENTO</label>
           <div style="display: flex; margin-top: 3px">
             <div class="form-group">
@@ -249,7 +249,7 @@
               v-model="municipioNac"
             />
           </div>
-        </div>
+     
 
         <div class="form-group col-2">
           <label>DIRECCIÓN DE CORRESPONDENCIA</label>
