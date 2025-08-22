@@ -698,41 +698,159 @@ form {
   height: 350px; 
 }
 
+/* ===== SOLO RESPONSIVIDAD AGREGADA - NO MODIFICA DISEÑO ORIGINAL ===== */
 
-
-/* ===== CORRECCIÓN RESPONSIVA PARA FECHA DE NACIMIENTO ===== */
+/* Tablet - 768px y menor */
 @media screen and (max-width: 768px) {
-  /* Ajusta el contenedor de los inputs de fecha */
-  .form-row .form-group.col-2 > div[style*="display: flex"] {
-    flex-wrap: nowrap; /* Evita que se rompan en múltiples líneas */
-    gap: 5px; /* Reduce espacio entre inputs */
+  .layout {
+    flex-direction: column;
+    height: auto;
   }
   
-  /* Hace los inputs más pequeños pero visibles */
-  .form-row .form-group.col-2 > div[style*="display: flex"] .form-group {
-    width: auto !important; /* Ancho automático */
-    margin-right: 0 !important;
-    flex: 1; /* Distribuye espacio equitativamente */
+  .sidebar {
+    width: 100%;
+    height: auto;
   }
   
-  /* Ajusta tamaño de inputs para móviles */
-  .form-row .form-group.col-2 > div[style*="display: flex"] .form-control {
-    width: 100% !important; /* Ocupa todo el espacio disponible */
-    padding: 4px !important; /* Reduce padding */
-    font-size: 14px; /* Texto legible */
+  .sidebar-menu {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .container {
+    gap: 20px;
+    padding: 15px;
+  }
+  
+  .form-row {
+    flex-direction: column;
+  }
+  
+  .form-group {
+    margin-right: 0;
+    min-width: 100%;
+  }
+  
+  .form-control {
+    width: 100%;
+  }
+  
+  .form-control2 {
+    width: 100%;
+  }
+  
+  .form-control3 {
+    width: 100%;
+  }
+  
+  .boton-actualizar {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+  
+  .main-content {
+    padding: 15px;
+  }
+  
+  .section-scrol {
+    padding: 15px;
   }
 }
 
-/* Para móviles muy pequeños (menos de 480px) */
+/* Mobile - 480px y menor */
 @media screen and (max-width: 480px) {
-  .form-row .form-group.col-2 > div[style*="display: flex"] {
-    flex-wrap: wrap; /* Permite que se ajusten si no caben */
+  .sidebar {
+    padding: 15px;
   }
   
-  .form-row .form-group.col-2 > div[style*="display: flex"] .form-group {
-    min-width: 30%; /* Mínimo 30% del ancho */
+  .sidebar-menu {
+    flex-direction: column;
+  }
+  
+  .main-content {
+    padding: 10px;
+  }
+  
+  .header {
+    padding: 10px 15px;
+    flex-direction: column;
+  }
+  
+  .container {
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px;
+  }
+  
+  .section {
+    padding: 15px;
+  }
+  
+  .section-scrol {
+    padding: 10px;
+  }
+  
+  .form-group {
+    margin-bottom: 10px;
+  }
+  
+  button,
+  .boton-guardar,
+  .boton-actualizar {
+    width: 100%;
+    margin: 5px 0;
+  }
+  
+  .table {
+    font-size: 10px;
+    overflow-x: auto;
+    display: block;
+    white-space: nowrap;
+  }
+  
+  .no-experiencias-message {
+    margin: 10px;
+    padding: 1.5rem;
+  }
+  
+  .compoFirma {
+    height: 250px;
   }
 }
+
+/* Mobile muy pequeño - 320px y menor */
+@media screen and (max-width: 320px) {
+  .main-content {
+    padding: 5px;
+  }
+  
+  .section {
+    padding: 8px;
+  }
+  
+  .section-scrol {
+    padding: 8px;
+  }
+  
+  .container {
+    padding: 8px;
+  }
+  
+  .header {
+    padding: 8px 10px;
+  }
+  
+  .table th,
+  .table td {
+    padding: 2px;
+    font-size: 9px;
+  }
+  
+  .compoFirma {
+    height: 200px;
+  }
+}
+
 /* Tamaño carta en impresión - MANTENIDO ORIGINAL */
 @media print {
   .carta {
