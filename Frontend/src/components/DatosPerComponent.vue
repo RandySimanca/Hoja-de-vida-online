@@ -190,7 +190,7 @@
       <div class="form-row">
         <div class="form-group col-2">
           <label>FECHA Y LUGAR DE NACIMIENTO</label>
-          <div style="display: flex; flex-wrap: wrap; gap: 10px">
+          <div style="display: flex; flex-wrap: wrap">
                         <div class="form-group" 
                             style="margin-right: 5px">
                               <label for="dia-nac">DÍA</label>
