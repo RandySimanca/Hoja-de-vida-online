@@ -190,7 +190,7 @@
       <div class="form-row">
          <div class="form-group col-2">
           <label>FECHA Y LUGAR DE NACIMIENTO</label>
-          <div style="display: flex; margin-top: 3px">
+     
             <div class="form-group">
               <label for="dia-nac">DÍA</label>
               <input
@@ -218,7 +218,7 @@
                 v-model="anoNac"
               />
             </div>
-          </div>
+      
 
           <div class="form-group">
             <label for="pais-nac">PAÍS</label>
