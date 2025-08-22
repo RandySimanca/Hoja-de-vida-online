@@ -189,36 +189,24 @@
 
       <div class="form-row">
          <div class="form-group col-2">
-          <label>FECHA Y LUGAR DE NACIMIENTO</label>
-     <div style="display: flex; flex-wrap: wrap; gap: 2px">
-            <div class="form-group">
-              <label for="dia-nac">DÍA</label>
-              <input
-                type="text"
-                id="dia-nac"
-                class="form-control"
-                v-model="diaNac"
-              />
-            </div>
-            <div class="form-group" >
-              <label for="mes-nac">MES</label>
-              <input
-                type="text"
-                id="mes-nac"
-                class="form-control"
-                v-model="mesNac"
-              />
-            </div>
-            <div class="form-group" >
-              <label for="ano-nac">AÑO</label>
-              <input
-                type="text"
-                id="ano-nac"
-                class="form-control"
-                v-model="anoNac"
-              />
-            </div>
-       </div>
+  <label>DIRECCIÓN DE CORRESPONDENCIA</label>
+
+  <div class="form-group-inline">
+    <div class="form-group">
+      <label for="pais-corr">PAÍS</label>
+      <input type="text" id="pais-corr" class="form-control" v-model="paisCorr" />
+    </div>
+
+    <div class="form-group">
+      <label for="depto-corr">DEPTO</label>
+      <input type="text" id="depto-corr" class="form-control" v-model="deptoCorr" />
+    </div>
+
+    <div class="form-group">
+      <label for="municipio-corr">MUNICIPIO</label>
+      <input type="text" id="municipio-corr" class="form-control" v-model="municipioCorr" />
+    </div>
+  </div>
       
 
           <div class="form-group">
