@@ -183,7 +183,9 @@
 
         <div class="form-group col-4">
           <label for="dm">D.M</label>
-          <input type="text" id="dm" class="form-control2" v-model="dm" placeholder="Distrito Militar"/>
+          <input type="text" id="dm" class="form-control2" 
+            v-model="dm" 
+            placeholder="Distrito Militar"/>
         </div>
       </div>
 
@@ -196,7 +198,7 @@
                               <input
                                 type="text"
                                 id="dia-nac"
-                                class="form-control"
+                                class="form-control3"
                                 v-model="diaNac"
                               />
                         </div>
@@ -205,7 +207,7 @@
               <input
                 type="text"
                 id="mes-nac"
-                class="form-control"
+                class="form-control3"
                 v-model="mesNac"
               />
             </div>
@@ -214,7 +216,7 @@
               <input
                 type="text"
                 id="ano-nac"
-                class="form-control"
+                class="form-control3"
                 v-model="anoNac"
               />
             </div>
