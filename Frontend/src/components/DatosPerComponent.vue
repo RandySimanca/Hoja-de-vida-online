@@ -196,7 +196,7 @@
               <input
                 type="text"
                 id="dia-nac"
-                class="form-control2"
+                class="form-control"
                 v-model="diaNac"
               />
             </div>
@@ -205,7 +205,7 @@
               <input
                 type="text"
                 id="mes-nac"
-                class="form-control2"
+                class="form-control"
                 v-model="mesNac"
               />
             </div>
@@ -214,13 +214,13 @@
               <input
                 type="text"
                 id="ano-nac"
-                class="form-control2"
+                class="form-control"
                 v-model="anoNac"
               />
             </div>
           </div>
 
-          <div class="form-group col-2">
+          <div class="form-group">
             <label for="pais-nac">PAÍS</label>
             <input
               type="text"
@@ -230,7 +230,7 @@
             />
           </div>
 
-          <div class="form-group col-2">
+          <div class="form-group">
             <label for="depto-nac">DEPTO</label>
             <input
               type="text"
