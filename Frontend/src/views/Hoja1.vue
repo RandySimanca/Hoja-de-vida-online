@@ -186,6 +186,7 @@ function generarPDF() {
 </style>
 
 <style>
+/* ===== TUS ESTILOS ORIGINALES (SIN MODIFICAR) ===== */
 button {
   padding: 10px 20px;
   background-color: #4caf50;
@@ -235,6 +236,7 @@ button:hover {
   color: #ffffff;
   letter-spacing: 1px;
 }
+
 .main-content {
   flex-grow: 1;
   overflow-y: auto;
@@ -360,6 +362,7 @@ button:hover {
   padding: 20px;
   height: 100%;
 }
+
 .sidebar-menu {
   list-style: none;
   padding: 0;
@@ -404,7 +407,6 @@ button:hover {
 .section-general {
   display: flex;
   flex-direction: column;
-
   box-sizing: border-box;
   padding: 0;
   margin-bottom: 40px;
@@ -425,6 +427,7 @@ button:hover {
   max-width: fit-content;
   border-radius: 5px;
 }
+
 .section-number {
   display: inline-block;
   width: 20px;
@@ -518,6 +521,7 @@ form {
   margin: 5px;
   outline: 2px solid #808080;
 }
+
 .form-group {
   margin-right: 5px;
   margin-bottom: 2px;
@@ -557,9 +561,11 @@ form {
   align-items: left;
   margin-right: 5px;
 }
+
 .checkbox-group input {
   margin-left: 0px;
 }
+
 .imagen {
   width: 100px;
   height: 120px;
@@ -574,6 +580,7 @@ form {
   border-collapse: collapse;
   margin-bottom: 10px;
 }
+
 .table th,
 .table td {
   border: 1px solid #ccc;
@@ -581,6 +588,7 @@ form {
   text-align: center;
   font-size: 12px;
 }
+
 .table th {
   background-color: #f0f0f0;
 }
@@ -601,9 +609,11 @@ form {
 .col-2 {
   flex: 10 0 10%;
 }
+
 .col-3 {
   flex: 0 0 31%;
 }
+
 .col-4 {
   flex: 0 0 23%;
 }
@@ -618,26 +628,10 @@ form {
   gap: 8px;
   margin-top: 0;
 }
+
 .datos-formacion-wrap.compact > * {
   margin-top: 0;
   margin-bottom: 0;
-}
-
-/* Tamaño carta en impresión */
-
-@media print {
-  .carta {
-    width: 8.5in !important;
-    height: 11in !important;
-    padding: 0.4in !important; /* margen interno ligeramente menor */
-    page-break-after: always !important;
-    box-sizing: border-box;
-  }
-  .carta:last-child {
-    page-break-after: auto;
-  }
-  /* Ocultar solo al imprimir */
-/* Eliminar regla global que ocultaba siempre .no-imprimir */
 }
 
 .no-experiencias-container {
@@ -702,5 +696,173 @@ form {
 
 .compoFirma {
   height: 350px; 
+}
+
+/* ===== SOLO RESPONSIVIDAD AGREGADA - NO MODIFICA DISEÑO ORIGINAL ===== */
+
+/* Tablet - 768px y menor */
+@media screen and (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .sidebar {
+    width: 100%;
+    height: auto;
+  }
+  
+  .sidebar-menu {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .container {
+    gap: 20px;
+    padding: 15px;
+  }
+  
+  .form-row {
+    flex-direction: column;
+  }
+  
+  .form-group {
+    margin-right: 0;
+    min-width: 100%;
+  }
+  
+  .form-control {
+    width: 100%;
+  }
+  
+  .form-control2 {
+    width: 100%;
+  }
+  
+  .form-control3 {
+    width: 100%;
+  }
+  
+  .boton-actualizar {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+  
+  .main-content {
+    padding: 15px;
+  }
+  
+  .section-scrol {
+    padding: 15px;
+  }
+}
+
+/* Mobile - 480px y menor */
+@media screen and (max-width: 480px) {
+  .sidebar {
+    padding: 15px;
+  }
+  
+  .sidebar-menu {
+    flex-direction: column;
+  }
+  
+  .main-content {
+    padding: 10px;
+  }
+  
+  .header {
+    padding: 10px 15px;
+    flex-direction: column;
+  }
+  
+  .container {
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px;
+  }
+  
+  .section {
+    padding: 15px;
+  }
+  
+  .section-scrol {
+    padding: 10px;
+  }
+  
+  .form-group {
+    margin-bottom: 10px;
+  }
+  
+  button,
+  .boton-guardar,
+  .boton-actualizar {
+    width: 100%;
+    margin: 5px 0;
+  }
+  
+  .table {
+    font-size: 10px;
+    overflow-x: auto;
+    display: block;
+    white-space: nowrap;
+  }
+  
+  .no-experiencias-message {
+    margin: 10px;
+    padding: 1.5rem;
+  }
+  
+  .compoFirma {
+    height: 250px;
+  }
+}
+
+/* Mobile muy pequeño - 320px y menor */
+@media screen and (max-width: 320px) {
+  .main-content {
+    padding: 5px;
+  }
+  
+  .section {
+    padding: 8px;
+  }
+  
+  .section-scrol {
+    padding: 8px;
+  }
+  
+  .container {
+    padding: 8px;
+  }
+  
+  .header {
+    padding: 8px 10px;
+  }
+  
+  .table th,
+  .table td {
+    padding: 2px;
+    font-size: 9px;
+  }
+  
+  .compoFirma {
+    height: 200px;
+  }
+}
+
+/* Tamaño carta en impresión - MANTENIDO ORIGINAL */
+@media print {
+  .carta {
+    width: 8.5in !important;
+    height: 11in !important;
+    padding: 0.4in !important;
+    page-break-after: always !important;
+    box-sizing: border-box;
+  }
+  
+  .carta:last-child {
+    page-break-after: auto;
+  }
 }
 </style>
