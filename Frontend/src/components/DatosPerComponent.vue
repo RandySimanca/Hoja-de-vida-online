@@ -190,34 +190,67 @@
       <div class="form-row">
         <div class="form-group col-2">
           <label>FECHA Y LUGAR DE NACIMIENTO</label>
-     
-            <div class="form-group">
-              <label for="dia-nac">DÍA</label>
-              <input
-                type="text"
-                id="dia-nac"
-                class="form-control"
-                v-model="diaNac"
-              />
-            </div>
-            <div class="form-group" >
+          <div style="display: flex; flex-wrap: wrap; gap: 10px">
+                        <div class="form-group" 
+                            style="width: 30px; margin-right: 5px">
+                              <label for="dia-nac">DÍA</label>
+                              <input
+                                type="text"
+                                id="dia-nac"
+                                class="form-control2"
+                                v-model="diaNac"
+                              />
+                        </div>
+            <div class="form-group" style="width: 30px; margin-right: 5px">
               <label for="mes-nac">MES</label>
               <input
                 type="text"
                 id="mes-nac"
-                class="form-control"
+                class="form-control2"
                 v-model="mesNac"
               />
             </div>
-            <div class="form-group" >
+            <div class="form-group" style="width: 30px; margin-right: 5px">
               <label for="ano-nac">AÑO</label>
               <input
                 type="text"
                 id="ano-nac"
-                class="form-control"
+                class="form-control2"
                 v-model="anoNac"
               />
             </div>
+          </div>
+
+          <div class="form-group col-2">
+            <label for="pais-nac">PAÍS</label>
+            <input
+              type="text"
+              id="pais-nac"
+              class="form-control"
+              v-model="paisNac"
+            />
+          </div>
+
+          <div class="form-group col-2">
+            <label for="depto-nac">DEPTO</label>
+            <input
+              type="text"
+              id="depto-nac"
+              class="form-control"
+              v-model="deptoNac"
+            />
+          </div>
+
+          <div class="form-group col-2">
+            <label for="municipio-nac">MUNICIPIO</label>
+            <input
+              type="text"
+              id="municipio-nac"
+              class="form-control"
+              v-model="municipioNac"
+            />
+          </div>
+        </div>
 
         <div class="form-group col-2">
           <label>DIRECCIÓN DE CORRESPONDENCIA</label>
