@@ -1,10 +1,7 @@
 <template>
   <form @submit.prevent="enviarFormulario">
     <div class="section section-idiomas-compacta">
-      <div class="section-title">
-        <span class="section-number">3</span> IDIOMAS
-      </div>
-      <div class="form-group">
+        <div class="form-group">
         <p class="p texto-explicativo-compacto">
           ESPECIFIQUE LOS IDIOMAS DIFERENTES AL ESPAÑOL QUE: HABLA, LEE, ESCRIBE
           DE FORMA, REGULAR (R), BIEN (B), O MUY BIEN (MB)
