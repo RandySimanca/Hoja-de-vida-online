@@ -1,20 +1,28 @@
 <!-- src/views/Hoja1.vue -->
 <template>
   <!-- Sección del encabezado -->
-  <div class="section-general contenido-pagina carta">
-    <div>
+  <div class="section-general contenido-pagina carta carta-compacta">
+    <div class="header-section">
       <HeaderComponent />
     </div>
-    <form @submit.prevent="enviarFormulario">
+    <form @submit.prevent="enviarFormulario" class="form-principal">
       <!-- Sección de datos cargados -->
       <div
         v-if="hojaStore.cargado"
-        class="datos-formacion-wrap compact contenido-pagina"
+        class="datos-formacion-wrap compact contenido-pagina contenido-compacto"
       >
-        <DatosPerComponent :datos="hojaStore.datosPersonales || {}" />
-        <FormacionAcadComponent
-          :formacion="hojaStore.formacionAcademica || {}"
-        />
+        <div class="componente-seccion">
+          <DatosPerComponent :datos="hojaStore.datosPersonales || {}" />
+        </div>
+
+        <div class="componente-seccion">
+          <FormacionAcadComponent
+            :formacion="hojaStore.formacionAcademica || {}"
+          />
+        </div>
+        <div class="componente-seccion componente-idiomas">
+          <IdiomasComponent />
+        </div>
       </div>
     </form>
   </div>
@@ -33,6 +41,7 @@ import html2pdf from "html2pdf.js";
 import HeaderComponent from "../components/HeaderComponent.vue";
 import DatosPerComponent from "../components/DatosPerComponent.vue";
 import FormacionAcadComponent from "../components/FormacionAcadComponent.vue";
+import IdiomasComponent from "../components/IdiomasComponent.vue";
 import FooterComponent from "../components/FooterComponent.vue";
 
 /** ─────── 🗂️ Instancias de stores ─────── **/
@@ -48,9 +57,8 @@ onMounted(() => {
     console.error(
       "❌ Token no encontrado. Redirigiendo o mostrando fallback..."
     );
- 
   } else {
-    hojaStore.cargarHojaDeVida(); 
+    hojaStore.cargarHojaDeVida();
     console.log("✅ Token válido:", token);
   }
 });
@@ -180,19 +188,100 @@ function generarPDF() {
 </script>
 
 <style scoped>
+/* ===== ESTILOS OPTIMIZADOS PARA UNA SOLA PÁGINA ===== */
 .section {
-  padding: 2rem;
+  padding: 1rem; /* Reducido de 2rem */
+}
+
+/* Carta compacta - optimizada para una página */
+.carta-compacta {
+  min-height: auto !important;
+  max-height: none !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* Espacio mínimo entre secciones */
+}
+
+/* Header compacto */
+.header-section {
+  flex-shrink: 0;
+  margin-bottom: 0.5rem;
+}
+
+/* Formulario principal sin espacios excesivos */
+.form-principal {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* Contenedor de datos compacto */
+.contenido-compacto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem; /* Espacio muy reducido entre componentes */
+  margin: 0;
+  padding: 0;
+}
+
+/* Secciones de componentes compactas */
+.componente-seccion {
+  margin: 0;
+  padding: 0;
+}
+
+/* Optimización específica para el componente de idiomas */
+.componente-idiomas {
+  margin-top: 0.2rem;
+}
+
+/* Override para elementos internos de los componentes */
+.componente-seccion .section {
+  padding: 0.5rem; /* Padding reducido para secciones internas */
+  margin-bottom: 0.3rem;
+}
+
+/* Optimización para tablas */
+.componente-seccion .table {
+  margin-bottom: 0.5rem;
+  font-size: 11px; /* Texto más pequeño para aprovechar espacio */
+}
+
+/* Optimización para form-groups */
+.componente-seccion .form-group {
+  margin-bottom: 0.3rem;
+}
+
+.componente-seccion .form-row {
+  margin: 0.2rem;
+}
+
+/* Reducir espaciado en párrafos explicativos */
+.componente-seccion .p {
+  font-size: 10px;
+  margin-bottom: 0.2rem;
+  line-height: 1.2;
+}
+
+/* Optimización para títulos de sección */
+.componente-seccion .section-title {
+  margin-bottom: 0.3rem;
+  padding: 1px;
+}
+
+/* Ocultar botones al generar PDF */
+.generando-pdf .no-imprimir {
+  display: none !important;
 }
 </style>
 
 <style>
-/* ===== TUS ESTILOS ORIGINALES (SIN MODIFICAR) ===== */
+/* ESTILOS GLOBALES OPTIMIZADOS */
 button {
-  padding: 10px 20px;
+  padding: 8px 16px; /* Reducido de 10px 20px */
   background-color: #4caf50;
   border: none;
   color: white;
-  font-size: 16px;
+  font-size: 14px; /* Reducido de 16px */
   border-radius: 4px;
   cursor: pointer;
 }
@@ -204,24 +293,26 @@ button:hover {
 .boton-guardar {
   background-color: #28a745;
   color: white;
-  padding: 10px 20px;
+  padding: 8px 16px; /* Reducido */
   border: none;
   border-radius: 5px;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 13px;
 }
 
 .boton-actualizar {
   background-color: #1e90ff;
   color: white;
-  padding: 10px 20px;
+  padding: 8px 16px; /* Reducido */
   border: none;
   border-radius: 5px;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-left: 30px;
+  margin-left: 20px; /* Reducido de 30px */
+  font-size: 13px;
 }
 
 .boton-guardar:hover {
@@ -229,10 +320,10 @@ button:hover {
 }
 
 .h1 {
-  font-size: 20px;
+  font-size: 18px; /* Reducido de 20px */
   font-weight: bold;
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
   color: #ffffff;
   letter-spacing: 1px;
 }
@@ -244,7 +335,7 @@ button:hover {
 
 .main-content {
   flex-grow: 1;
-  padding: 24px;
+  padding: 20px; /* Reducido de 24px */
   height: 100%;
   overflow-y: auto;
 }
@@ -252,8 +343,8 @@ button:hover {
 .header {
   background-color: #24292e;
   color: #fff;
-  padding: 16px;
-  margin-bottom: 24px;
+  padding: 12px; /* Reducido de 16px */
+  margin-bottom: 16px; /* Reducido de 24px */
   border-radius: 12px;
   text-align: center;
 }
@@ -261,13 +352,13 @@ button:hover {
 .h1 {
   color: #f10c0c;
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px; /* Reducido de 24px */
 }
 
 .boton-cerrar {
   background-color: #ef4444;
   color: white;
-  padding: 8px 16px;
+  padding: 6px 12px; /* Reducido */
   border: none;
   border-radius: 6px;
   font-weight: bold;
@@ -281,9 +372,9 @@ button:hover {
 
 .saludo {
   font-family: "Poppins", sans-serif;
-  font-size: 1.1rem;
+  font-size: 1rem; /* Reducido */
   color: #2c3e50;
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.8rem; /* Reducido */
   background-color: #f8f9fa;
   border-left: 4px solid #34495e;
   border-radius: 6px;
@@ -297,12 +388,12 @@ button:hover {
 
 .saludo {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px; /* Reducido */
 }
 
 .saludo {
   display: block;
-  margin-bottom: 24px;
+  margin-bottom: 16px; /* Reducido */
 }
 
 .layout {
@@ -333,12 +424,12 @@ button:hover {
 }
 
 .sidebar-menu li {
-  margin-bottom: 16px;
+  margin-bottom: 12px; /* Reducido */
 }
 
 .sidebar-menu a {
   display: block;
-  padding: 12px 16px;
+  padding: 10px 14px; /* Reducido */
   color: #e0e0e0;
   background-color: transparent;
   border-radius: 8px;
@@ -362,7 +453,6 @@ button:hover {
   padding: 20px;
   height: 100%;
 }
-
 .sidebar-menu {
   list-style: none;
   padding: 0;
@@ -370,7 +460,7 @@ button:hover {
 }
 
 .sidebar-menu li {
-  margin-bottom: 16px;
+  margin-bottom: 12px; /* Reducido */
 }
 
 .sidebar-menu a {
@@ -386,14 +476,14 @@ button:hover {
 .section-scrol {
   flex: 1;
   overflow-y: auto;
-  padding: 20px;
+  padding: 16px; /* Reducido */
   scroll-behavior: smooth;
 }
 
 .section {
   border: 2px solid rgb(0, 204, 255);
-  padding: 10px;
-  gap: 10px;
+  padding: 8px; /* Reducido de 10px */
+  gap: 8px; /* Reducido */
   display: block;
   border-radius: 18px;
   flex-direction: row;
@@ -409,8 +499,8 @@ button:hover {
   flex-direction: column;
   box-sizing: border-box;
   padding: 0;
-  margin-bottom: 40px;
-  margin-top: 10px;
+  margin-bottom: 16px; /* Muy reducido de 40px */
+  margin-top: 8px; /* Reducido */
 }
 
 .contenido-pagina {
@@ -421,7 +511,7 @@ button:hover {
 .section-title {
   background-color: rgb(10, 10, 10);
   padding: 2px;
-  margin-bottom: 5px;
+  margin-bottom: 3px; /* Reducido */
   font-weight: bold;
   color: #ccc;
   max-width: fit-content;
@@ -430,13 +520,13 @@ button:hover {
 
 .section-number {
   display: inline-block;
-  width: 20px;
-  height: 20px;
+  width: 18px; /* Reducido */
+  height: 18px; /* Reducido */
   background-color: #b4b4b4;
   color: rgb(255, 255, 255);
   text-align: center;
   border-radius: 50%;
-  margin-right: 10px;
+  margin-right: 8px; /* Reducido */
 }
 
 .container1 {
@@ -452,7 +542,7 @@ button:hover {
   border: 2px solid rgb(0, 204, 255);
   border-radius: 18px;
   flex-direction: row;
-  gap: 100px;
+  gap: 80px; /* Reducido de 100px */
   box-shadow: 6px 6px 0px rgba(0, 0, 0, 1);
 }
 
@@ -462,14 +552,14 @@ button:hover {
 }
 
 .declaration p {
-  font-size: 12px;
+  font-size: 11px; /* Reducido */
   color: #333;
   margin: 0;
   font-weight: bold;
 }
 
 .declaration td {
-  font-size: 12px;
+  font-size: 11px; /* Reducido */
   color: #333;
   margin: 0;
   font-weight: bold;
@@ -486,7 +576,7 @@ header {
 .header h2,
 .header h3,
 .header p {
-  margin: 5px 0;
+  margin: 3px 0; /* Reducido */
   color: #f8f6f6;
 }
 
@@ -495,7 +585,7 @@ header {
   align-items: center;
   background-color: #117de9;
   color: rgb(253, 252, 252);
-  padding: 16px 32px;
+  padding: 12px 24px; /* Reducido */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   font-family: "Segoe UI", sans-serif;
   padding-top: 0;
@@ -505,26 +595,26 @@ header {
 }
 
 form {
-  margin-bottom: 5px;
+  margin-bottom: 3px; /* Reducido */
 }
 
 .form-group label {
   display: block;
   font-weight: bold;
-  margin-bottom: 2px;
-  font-size: 11px;
+  margin-bottom: 1px; /* Reducido */
+  font-size: 10px; /* Reducido */
 }
 
 .form-row {
   display: flex;
   flex-wrap: wrap;
-  margin: 5px;
+  margin: 3px; /* Reducido */
   outline: 2px solid #808080;
 }
 
 .form-group {
-  margin-right: 5px;
-  margin-bottom: 2px;
+  margin-right: 3px; /* Reducido */
+  margin-bottom: 1px; /* Reducido */
   flex: 1;
 }
 
@@ -532,34 +622,34 @@ form {
   width: 70%;
   padding: 0px;
   box-sizing: border-box;
-  height: 24px;
+  height: 22px; /* Reducido */
 }
 
 .form-control1 {
   width: 100%;
-  padding: 5px;
+  padding: 3px; /* Reducido */
   border: 1px solid #ccc;
   box-sizing: border-box;
 }
 
 .form-control2 {
   width: 50%;
-  padding: 5px;
+  padding: 3px; /* Reducido */
   border: 1px solid #ccc;
   box-sizing: border-box;
 }
 
 .form-control3 {
   width: 30%;
-  padding: 4px;
+  padding: 3px; /* Reducido */
   box-sizing: border-box;
-  height: 28px;
+  height: 26px; /* Reducido */
 }
 
 .checkbox-group {
   display: flex;
   align-items: left;
-  margin-right: 5px;
+  margin-right: 3px; /* Reducido */
 }
 
 .checkbox-group input {
@@ -567,8 +657,8 @@ form {
 }
 
 .imagen {
-  width: 100px;
-  height: 120px;
+  width: 90px; /* Reducido */
+  height: 108px; /* Reducido */
   border: 1px solid #ccc;
   display: block;
   margin: 0 auto;
@@ -578,7 +668,7 @@ form {
 .table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 10px;
+  margin-bottom: 6px; /* Reducido */
 }
 
 .table th,
@@ -586,7 +676,7 @@ form {
   border: 1px solid #ccc;
   padding: 1px;
   text-align: center;
-  font-size: 12px;
+  font-size: 10px; /* Reducido */
 }
 
 .table th {
@@ -595,39 +685,35 @@ form {
 
 .btn btn-danger {
   line-height: 1;
-  padding: 0.5rem 1rem;
+  padding: 0.3rem 0.6rem; /* Reducido */
 }
 
 .compacto h3,
 .compacto h2,
 .compacto p {
   margin-top: 0;
-  margin-bottom: 4px;
+  margin-bottom: 2px; /* Reducido */
   text-align: center;
 }
 
 .col-2 {
-  flex: 1 1 calc(33.333% - 10px); /* Para 3 columnas con gap */
-  min-width: 100px;
+  flex: 10 0 10%;
 }
-
-
 .col-3 {
   flex: 0 0 31%;
 }
-
 .col-4 {
   flex: 0 0 23%;
 }
 
 .p {
-  font-size: 11px;
+  font-size: 10px; /* Reducido */
 }
 
 .datos-formacion-wrap.compact {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px; /* Reducido */
   margin-top: 0;
 }
 
@@ -636,18 +722,58 @@ form {
   margin-bottom: 0;
 }
 
+/* Tamaño carta en impresión - OPTIMIZADO */
+@media print {
+  .carta {
+    width: 8.5in !important;
+    height: 11in !important;
+    padding: 0.3in !important; /* Margen reducido para aprovechar más espacio */
+    page-break-after: always !important;
+    box-sizing: border-box;
+  }
+  
+  .carta-compacta {
+    height: 10.4in !important; /* Altura máxima aprovechable */
+    overflow: hidden !important;
+  }
+  
+  .carta:last-child {
+    page-break-after: auto;
+  }
+  
+  /* Optimizaciones adicionales para impresión */
+  .section {
+    padding: 0.2rem !important;
+  }
+  
+  .table th,
+  .table td {
+    font-size: 9px !important;
+    padding: 1px !important;
+  }
+  
+  .form-group label {
+    font-size: 9px !important;
+  }
+  
+  /* Ocultar solo al imprimir */
+  .no-imprimir {
+    display: none !important;
+  }
+}
+
 .no-experiencias-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  padding: 1.5rem; /* Reducido */
 }
 
 .no-experiencias-message {
   background: #fff;
   border-radius: 15px;
-  padding: 2rem;
-  max-width: 500px;
+  padding: 1.5rem; /* Reducido */
+  max-width: 450px; /* Reducido */
   width: 100%;
   text-align: center;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -661,30 +787,30 @@ form {
 }
 
 .icon-large {
-  font-size: 3rem;
+  font-size: 2.5rem; /* Reducido */
   color: #6b7280;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem; /* Reducido */
 }
 
 .no-experiencias-message h3 {
   color: #111827;
-  font-size: 1.4rem;
+  font-size: 1.2rem; /* Reducido */
   font-weight: 600;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.6rem; /* Reducido */
 }
 
 .no-experiencias-message p {
   color: #4b5563;
-  font-size: 1rem;
-  line-height: 1.5;
-  margin-bottom: 1.5rem;
+  font-size: 0.9rem; /* Reducido */
+  line-height: 1.4; /* Reducido */
+  margin-bottom: 1.2rem; /* Reducido */
 }
 
 .btn-recordatorio {
   background: linear-gradient(135deg, #fbbf24, #f59e0b);
   color: #fff;
   font-weight: 600;
-  padding: 0.75rem 1.5rem;
+  padding: 0.6rem 1.2rem; /* Reducido */
   border-radius: 9999px;
   border: none;
   cursor: pointer;
@@ -697,180 +823,6 @@ form {
 }
 
 .compoFirma {
-  height: 350px; 
-}
-
-/* ===== SOLO RESPONSIVIDAD AGREGADA - NO MODIFICA DISEÑO ORIGINAL ===== */
-
-/* Tablet - 768px y menor */
-@media screen and (max-width: 768px) {
-  .layout {
-    flex-direction: column;
-    height: auto;
-  }
-  
-  .sidebar {
-    width: 100%;
-    height: auto;
-  }
-  
-  .sidebar-menu {
-    display: flex;
-    flex-wrap: wrap;
-  }
-  
-  .container {
-    gap: 20px;
-    padding: 15px;
-  }
-  
-  .form-row {
-    flex-direction: column;
-  }
-  
-  .form-group {
-    margin-right: 0;
-    min-width: 100%;
-  }
-  
-  .form-control {
-    width: 100%;
-  }
-  
-  .form-control2 {
-    width: 100%;
-  }
-  
-  .form-control3 {
-    width: 100%;
-  }
-  
-  .boton-actualizar {
-    margin-left: 0;
-    margin-top: 10px;
-  }
-  
-  .main-content {
-    padding: 15px;
-  }
-  
-  .section-scrol {
-    padding: 15px;
-  }
-}
-
-/* Mobile - 480px y menor */
-@media screen and (max-width: 480px) {
-  .sidebar {
-    padding: 15px;
-  }
-  
-  .sidebar-menu {
-    flex-direction: column;
-  }
-  
-  .main-content {
-    padding: 10px;
-  }
-  
-  .header {
-    padding: 10px 15px;
-    flex-direction: column;
-  }
-  
-  .container {
-    flex-direction: column;
-    gap: 15px;
-    padding: 10px;
-  }
-  
-  .section {
-    padding: 15px;
-  }
-  
-  .section-scrol {
-    padding: 10px;
-  }
-  
-  .form-group {
-    margin-bottom: 10px;
-  }
-  
-  button,
-  .boton-guardar,
-  .boton-actualizar {
-    width: 100%;
-    margin: 5px 0;
-  }
-  
-  .table {
-    font-size: 10px;
-    overflow-x: auto;
-    display: block;
-    white-space: nowrap;
-  }
-  
-  .no-experiencias-message {
-    margin: 10px;
-    padding: 1.5rem;
-  }
-  
-  .compoFirma {
-    height: 250px;
-  }
- 
-  .col-2 {
-    flex: 1 1 100%;
-  }
-
-}
-
-/* Mobile muy pequeño - 320px y menor */
-@media screen and (max-width: 320px) {
-  .main-content {
-    padding: 5px;
-  }
-  
-  .section {
-    padding: 8px;
-  }
-  
-  .section-scrol {
-    padding: 8px;
-  }
-  
-  .container {
-    padding: 8px;
-  }
-  
-  .header {
-    padding: 8px 10px;
-  }
-  
-  .table th,
-  .table td {
-    padding: 2px;
-    font-size: 9px;
-  }
-  
-  .compoFirma {
-    height: 200px;
-  }
-}
-
-/* Tamaño carta en impresión - MANTENIDO ORIGINAL */
-@media print {
-  .carta {
-    width: 8.5in !important;
-    height: 11in !important;
-    padding: 0.4in !important;
-    page-break-after: always !important;
-    box-sizing: border-box;
-  }
-  
-  .carta:last-child {
-    page-break-after: auto;
-  }
+  height: 300px; /* Reducido */
 }
 </style>
-  
