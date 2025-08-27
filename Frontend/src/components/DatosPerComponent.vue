@@ -256,8 +256,7 @@
 
            <div class="form-group col-2">
           <label>DIRECCIÓN DE CORRESPONDENCIA</label>
-
-          <div style="display: flex; margin-top: 3px">
+          <div>
             <div class="form-group col-2">
               <label for="pais-corr">PAÍS</label>
               <input
