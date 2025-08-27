@@ -257,7 +257,7 @@
            <div class="form-group col-2">
           <label>DIRECCIÓN DE CORRESPONDENCIA</label>
           <div style="display: flex; margin-top: 3px" >
-              <div class="form-group col-2">
+              <div class="form-group col-3">
               <label for="pais-corr">PAÍS</label>
               <input
                 type="text"
@@ -267,7 +267,7 @@
               />
             </div>
 
-            <div class="form-group col-2">
+            <div class="form-group col-3">
               <label for="depto-corr">DEPTO</label>
               <input
                 type="text"
@@ -277,7 +277,7 @@
               />
             </div>
 
-            <div class="form-group col-2">
+            <div class="form-group col-3">
               <label for="municipio-corr">MUNICIPIO</label>
               <input
                 type="text"
