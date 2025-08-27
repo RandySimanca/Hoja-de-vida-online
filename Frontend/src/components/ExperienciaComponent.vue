@@ -5,18 +5,18 @@
       <div class="form-group">
         <label>EMPLEO ACTUAL O CONTRATO ANTERIOR</label>
 
-        <div class="form-row" >
+        <div class="form-row">
           <div class="form-group col-2">
             <label>EMPRESA O ENTIDAD.</label>
             <input type="text" v-model="experienciaLocal.empresa" class="form-control" />
           </div>
 
-          <div class="checkbox-group">
+          <div class="checkbox-group col-2">
             <label>PUBLICA</label>
             <input type="radio" value="Publica" v-model="experienciaLocal.tipoEntidad" />
           </div>
 
-          <div class="checkbox-group">
+          <div class="checkbox-group col-2">
             <label>PRIVADA</label>
             <input type="radio" value="Privada" v-model="experienciaLocal.tipoEntidad" />
           </div>
