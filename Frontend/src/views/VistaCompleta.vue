@@ -46,6 +46,7 @@ async function generarPDF() {
   await nextTick();
   await new Promise(r => setTimeout(r, 150));
   generando.value = true;
+  
   const opciones = {
     margin: 0,
     filename: 'hoja-de-vida.pdf',
@@ -54,23 +55,18 @@ async function generarPDF() {
     jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
     pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
   };
+  
   try {
+    const nombreUsuario = nombre.value?.trim() || 'usuario';
+    const nombreArchivo = `hoja de vida ${nombreUsuario}.pdf`;
+    
     await html2pdf()
       .set(opciones)
       .from(documento.value)
-      .toPdf()
-      .get('pdf')
-      .then((pdf) => {
-  const total = pdf.internal.getNumberOfPages();
-  if (total > 1) {
-    pdf.deletePage(total);
-  }
-
-  const nombreUsuario = nombre.value?.trim() || 'usuario';
-  const nombreArchivo = `hoja de vida ${nombreUsuario}.pdf`;
-  pdf.save(nombreArchivo);
-});
-
+      .save(nombreArchivo);
+      
+  } catch (error) {
+    console.error('Error al generar PDF:', error);
   } finally {
     generando.value = false;
   }
