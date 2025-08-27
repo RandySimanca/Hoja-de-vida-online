@@ -195,7 +195,7 @@
           class="boton-guardar boton-guardar-formacion" 
           style="margin-left: 10px;"
         >
-          {{ modoEdicion ? 'Actualizar Formación Académica' : 'Guardar Formación Académica' }}
+          {{ modoEdicion ? 'Guardar / Actualizar Formación Académica' : 'Guardar Formación Académica' }}
         </button>
       </div>
     </div>
