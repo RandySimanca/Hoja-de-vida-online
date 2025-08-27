@@ -40,7 +40,8 @@
 
           <div class="form-group col-2">
             <label>CORREO ELECTRÓNICO ENTIDAD</label>
-            <input type="email" v-model="experienciaLocal.correoEntidad" class="form-control" />
+            <input type="email" v-model="experienciaLocal.correoEntidad" class="form-control correo-input" />
+
           </div>
         </div>
 
@@ -339,5 +340,8 @@ export default {
 </script>
 
 <style scoped>
-/* Aquí puedes incluir tu estilo personalizado */
+.correo-input {
+  width: 100%; /* o 90%, según el layout */
+}
+
 </style>
