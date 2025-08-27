@@ -146,7 +146,7 @@
       </div>
 
       <div class="form-row">
-        <div class="form-group col-4">
+        <div class="form-group col-3">
           <label>LIBRETA MILITAR</label>
           <div style="display: flex; margin-top: 3px">
             <div class="checkbox-group">
