@@ -190,7 +190,7 @@
       </div>
 
       <div class="form-row">
-     
+     <div class="form-group col-2">
           <label>FECHA Y LUGAR DE NACIMIENTO</label>
           <div style="display: flex; flex-wrap: wrap">
                         <div class="form-group col-2">
@@ -251,9 +251,10 @@
               v-model="municipioNac"
             />
           </div>
+       </div>
        
 
-        <div class="form-group col-2">
+           <div class="form-group col-2">
           <label>DIRECCIÓN DE CORRESPONDENCIA</label>
 
           <div style="display: flex; margin-top: 3px">
@@ -286,7 +287,7 @@
                 v-model="municipioCorr"
               />
             </div>
-          <!--</div>comentado para pruebas-->
+          </div>comentado para pruebas
 
           <div class="form-group col-2">
             <label for="direccion-corr">DIRECCIÓN</label>
@@ -320,7 +321,7 @@
         </div>
      </div>
     </div>
-      </div>
+   
   
     <div class="form-group no-imprimir" style="margin-top: 20px">
       <button
