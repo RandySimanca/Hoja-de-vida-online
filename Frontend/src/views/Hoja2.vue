@@ -74,8 +74,8 @@ function agrupar(array, tamano) {
   return resultado;
 }
 
-// Primera página: hasta 3 experiencias
-const primerasExperiencias = computed(() => experienciaStore.experiencias.slice(0, 3));
+// Primera página: hasta 4 experiencias
+const primerasExperiencias = computed(() => experienciaStore.experiencias.slice(0, 4));
 // Páginas siguientes: grupos de 4
 const experienciasAgrupadas = computed(() => agrupar(experienciaStore.experiencias.slice(2), 4));
 </script>
