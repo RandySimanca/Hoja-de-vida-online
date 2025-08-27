@@ -700,7 +700,7 @@ form {
   flex: 10 0 10%;
 }
 .col-3 {
-  flex: 0 0 31%;
+  flex: 0 0 30%;
 }
 .col-4 {
   flex: 0 0 23%;
