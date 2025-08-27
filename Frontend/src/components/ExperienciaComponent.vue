@@ -11,7 +11,7 @@
             <input type="text" v-model="experienciaLocal.empresa" class="form-control" />
           </div>
 
-          <div class="checkbox-group col-2">
+          <div class="checkbox-group">
             <label>PUBLICA</label>
             <input type="radio" value="Publica" v-model="experienciaLocal.tipoEntidad" />
           </div>
