@@ -146,7 +146,7 @@
       </div>
 
       <div class="form-row">
-        <div class="form-group col-2">
+        <div class="form-group col-4">
           <label>LIBRETA MILITAR</label>
           <div style="display: flex; margin-top: 3px">
             <div class="checkbox-group">
@@ -287,7 +287,7 @@
                 v-model="municipioCorr"
               />
             </div>
-          </div>comentado para pruebas
+          </div>
 
           <div class="form-group col-2">
             <label for="direccion-corr">DIRECCIÓN</label>
