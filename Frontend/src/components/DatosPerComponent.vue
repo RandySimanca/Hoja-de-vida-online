@@ -318,7 +318,7 @@
             />
           </div>
         </div>
-      </div>
+     
     </div>
   
     <div class="form-group no-imprimir" style="margin-top: 20px">
