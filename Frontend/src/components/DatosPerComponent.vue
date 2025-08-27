@@ -220,7 +220,7 @@
                 v-model="anoNac"
               />
             </div>
-         <!-- </div> -->
+         </div>
 
           <div class="form-group col-2">
             <label for="pais-nac">PAÍS</label>
@@ -251,7 +251,7 @@
               v-model="municipioNac"
             />
           </div>
-        </div>
+        <!-- </div> -->
 
         <div class="form-group col-2">
           <label>DIRECCIÓN DE CORRESPONDENCIA</label>
