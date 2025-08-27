@@ -5,7 +5,7 @@
       <div class="form-group">
         <label>EMPLEO ACTUAL O CONTRATO ANTERIOR</label>
 
-        <div class="form-row" style="display: flex; margin-top: 3px">
+        <div class="form-row" >
           <div class="form-group col-2">
             <label>EMPRESA O ENTIDAD.</label>
             <input type="text" v-model="experienciaLocal.empresa" class="form-control" />
