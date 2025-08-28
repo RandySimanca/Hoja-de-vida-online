@@ -138,10 +138,20 @@
           </thead>
           <tbody>
             <tr v-for="(formacion, index) in formacionesSuperior" :key="index">
-              <td>
-                <input class="form-control" v-model="formacion.modalidad" />
-              </td>
-              <td>
+              <td class="col-modalidad">
+  <select class="form-control" v-model="formacion.modalidad">
+    <option disabled value="">Seleccione modalidad</option>
+    <option value="TC">TC</option>
+    <option value="TL">TL</option>
+    <option value="TE">TE</option>
+    <option value="UN">UN</option>
+    <option value="ES">ES</option>
+    <option value="MG">MG</option>
+    <option value="DOC">DOC</option>
+  </select>
+</td>
+
+              <td class="col-modalidad">
                 <input class="form-control" v-model="formacion.semestres" />
               </td>
               <td>
@@ -159,15 +169,16 @@
                   v-model="formacion.graduado" 
                   :name="'graduado-' + index"
                 />
-              </td>
+              </td class="col-semestre">
               <td><input class="form-control" v-model="formacion.titulo" /></td>
-              <td>
-                <input class="form-control" v-model="formacion.mesTermino" />
+              <td class=" col-modalidad">
+                <input class="form-control" v-model="formacion.mesTermino" placeholder="mm"/>
               </td>
-              <td>
-                <input class="form-control" v-model="formacion.anioTermino" />
+              <td class="col-modalidad">
+                <input class="form-control" v-model="formacion.anioTermino" placeholder="aaaa" />
               </td>
-              <td><input class="form-control" v-model="formacion.tarjeta" /></td>
+              <td class="col-modalidad">
+                <input class="form-control " v-model="formacion.tarjeta"/></td>
               <td>
                 <button
                   class="btn btn-danger btn-sm no-imprimir"
@@ -195,7 +206,7 @@
           class="boton-guardar boton-guardar-formacion" 
           style="margin-left: 10px;"
         >
-          {{ modoEdicion ? 'Guardar ó Actualizar Formación Académica' : 'Guardar Formación Académica'}}
+          {{ modoEdicion ? 'Actualizar Formación Académica' : 'Guardar Formación Académica' }}
         </button>
       </div>
     </div>
@@ -497,6 +508,29 @@ export default {
 .boton-guardar-formacion:hover {
   background-color: #218838 !important;
 }
+
+/* Columnas angostas */
+.col-modalidad,
+.col-semestres {
+  width: 80px;
+  max-width: 100px;
+  white-space: nowrap;
+}
+
+/* Columna más ancha para título */
+.col-titulo {
+  width: 240px;
+  max-width: 100%;
+}
+
+/* Ajuste general para inputs */
+.form-control1 {
+  width: 100%;
+  font-size: 10px;
+  padding: 2px 4px;
+  box-sizing: border-box;
+}
+
 
 /* Responsive para impresión */
 @media print {
