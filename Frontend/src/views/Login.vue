@@ -43,7 +43,7 @@
                 ? "Registrando..."
                 : "Ingresando..."
               : modoRegistro
-              ? "Registrarme"
+              ? "Registrate"
               : "Entrar"
           }}
         </button>
