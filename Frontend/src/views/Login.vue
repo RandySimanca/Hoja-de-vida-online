@@ -1,368 +1,493 @@
 <template>
-  <div class="login-wrapper">
-    <div class="login-card">
-      <h2>{{ modoRegistro ? "Crear cuenta" : "Bienvenido" }}</h2>
-      <p>
-        {{
-          modoRegistro
-            ? "Completa tus datos para registrarte"
-            : "Inicia sesión para acceder a tu panel"
-        }}
-      </p>
-
-      <form @submit.prevent="modoRegistro ? handleRegister() : handleLogin()">
-        <!-- Email -->
-        <input
-          v-model="email"
-          type="email"
-          placeholder="Correo electrónico"
-          autocomplete="email"
-        />
-
-        <!-- Password -->
-        <input
-          v-model="password"
-          type="password"
-          placeholder="Contraseña"
-          autocomplete="current-password"
-        />
-
-        <!-- Nombre completo (solo para registro) -->
-        <input
-          v-if="modoRegistro"
-          v-model="nombre"
-          type="text"
-          placeholder="Nombre completo"
-          autocomplete="name"
-        />
-
-        <button type="submit" :disabled="loading">
-          {{
-            loading
-              ? modoRegistro
-                ? "Registrando..."
-                : "Ingresando..."
-              : modoRegistro
-              ? "Registrate"
-              : "Entrar"
-          }}
-        </button>
-
-        <p v-if="error" class="error">{{ error }}</p>
-      </form>
-
-      <p>
-        {{ modoRegistro ? "¿Ya tienes cuenta?" : "¿No tienes cuenta?" }}
-        <button @click="modoRegistro = !modoRegistro" class="toggle-btn">
-          {{ modoRegistro ? "Entrar" : "Registrarme" }}
-        </button>
-      </p>
+  <div>
+    <div id="documento-pdf" ref="documento" class="pdf-root" :class="{ 'generando-pdf': generando }">
+      <Hoja1 />
+      <Hoja2 />
+      <Hoja3 />
     </div>
 
-    <!-- Pie de página -->
-    <footer class="login-footer">
-      <div class="footer-content">
-        <div class="contact-info">
-          <h4>Información de Contacto</h4>
-          <div class="contact-item">
-            <span class="contact-icon">📧</span>
-            <span>Randy Simanca</span>
-          </div>
-          <div class="contact-item">
-            <span class="contact-icon">📞</span>
-            <span>+57 314 519 3285</span>
-          </div>
-          <div class="contact-item">
-            <span class="contact-icon">📍</span>
-            <span>Pueblo Nuevo - Cordoba, Colombia</span>
-          </div>
+    <!-- Botón de generar PDF -->
+    <button
+      class="pdf-button"
+      :disabled="generando"
+      :class="{ 'limite-alcanzado': limiteAlcanzado }"
+      :aria-busy="generando ? 'true' : 'false'"
+      @click="generarPDF"
+      :title="limiteAlcanzado ? 'Click para ver opciones de contacto' : 'Generar PDF'"
+    >
+      <span v-if="!generando && !limiteAlcanzado" class="btn-icon" aria-hidden="true">📄</span>
+      <span v-else-if="limiteAlcanzado" class="btn-icon" aria-hidden="true">🔒</span>
+      <span v-else class="spinner" aria-hidden="true"></span>
+      <span class="btn-text">
+        {{ 
+          limiteAlcanzado 
+            ? 'Generar PDF (Límite alcanzado)' 
+            : generando 
+              ? 'Generando...' 
+              : `Generar PDF (${descargasRestantes}/${limiteDescargas})`
+        }}
+      </span>
+    </button>
+
+    <!-- Modal de límite alcanzado -->
+    <div v-if="mostrarModalLimite" class="modal-overlay" @click="cerrarModal">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h3>🔒 Descargas en modo gratis alcanzado</h3>
+          <button @click="cerrarModal" class="close-btn">&times;</button>
         </div>
-        
-        <div class="social-links">
-          <a href="#" class="social-link">Facebook</a>
-          <a href="#" class="social-link">LinkedIn</a>
-          <a href="#" class="social-link">Twitter</a>
-        </div>
-        
-        <div class="footer-bottom">
-          <p>&copy; 2025 Randy Simanca. Todos los derechos reservados.</p>
-          <div class="footer-links">
-            <a href="#">Términos de Servicio</a>
-            <a href="#">Política de Privacidad</a>
-            <a href="#">Soporte</a>
+        <div class="modal-body">
+          <p>Has alcanzado el límite máximo de <strong>{{ limiteDescargas }} descargas</strong> de tu hoja de vida en PDF en elmodo gratuito.</p>
+          <p>Para continuar descargando, contacta al administrador del sistema:</p>
+          
+          <div class="contact-info">
+            <div class="contact-item">
+              <span class="contact-icon">📧</span>
+              <span>Randy Simanca</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-icon">📞</span>
+              <span>+57 314 519 3285</span>
+            </div>
           </div>
+          
+          <p class="note">El administrador podrá restablecer tu contador de descargas.</p>
+        </div>
+        <div class="modal-footer">
+          <button @click="cerrarModal" class="btn-secondary">Cerrar</button>
+          <button @click="copiarContacto" class="btn-primary">
+            {{ textoCopiado ? '✓ Copiado' : 'Copiar numero de contacto' }}
+          </button>
         </div>
       </div>
-    </footer>
+    </div>
+
+    <!-- Contador visual (opcional - para mostrar al usuario) -->
+    <div class="contador-info" v-if="!limiteAlcanzado">
+      <span class="contador-text">Descargas disponibles: {{ descargasRestantes }}</span>
+      <div class="contador-barra">
+        <div 
+          class="contador-progreso" 
+          :style="{ width: `${(descargasUsadas / limiteDescargas) * 100}%` }"
+        ></div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import axios from "../api/axios"; 
-import { useHojaVidaStore } from "../stores/hojaVida";
+import { ref, nextTick, computed, onMounted } from 'vue';
+import html2pdf from 'html2pdf.js';
+import Hoja1 from './Hoja1.vue';
+import Hoja2 from './Hoja2.vue';
+import Hoja3 from './Hoja3.vue';
+import { useRoute } from 'vue-router';
+import { useUsuarioStore } from '../stores/usuarios';
 
-const email = ref("");
-const password = ref("");
-const nombre = ref("");
-const error = ref("");
-const loading = ref(false);
-const modoRegistro = ref(false);
-const router = useRouter();
+const documento = ref(null);
+const generando = ref(false);
+const nombre = ref('Invitado');
+const route = useRoute();
+const usuarioStore = useUsuarioStore();
 
-const handleLogin = async () => {
-  error.value = "";
-  if (!email.value || !password.value) {
-    error.value = "Completa todos los campos";
+// Sistema de contador de descargas
+const limiteDescargas = ref(2); // Límite configurable
+const descargasUsadas = ref(0);
+const mostrarModalLimite = ref(false);
+const textoCopiado = ref(false);
+
+// Computed properties
+const descargasRestantes = computed(() => limiteDescargas.value - descargasUsadas.value);
+const limiteAlcanzado = computed(() => descargasUsadas.value >= limiteDescargas.value);
+
+onMounted(() => {
+  const datos = JSON.parse(localStorage.getItem('usuario'));
+  if (datos?.nombre) nombre.value = datos.nombre;
+  
+  // Cargar contador de descargas del localStorage
+  cargarContadorDescargas();
+});
+
+function cargarContadorDescargas() {
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
+  const userId = usuario?.id || 'anonimo';
+  const key = `descargas_pdf_${userId}`;
+  
+  const datos = localStorage.getItem(key);
+  if (datos) {
+    const info = JSON.parse(datos);
+    descargasUsadas.value = info.usadas || 0;
+    limiteDescargas.value = info.limite || 5;
+  }
+}
+
+function guardarContadorDescargas() {
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
+  const userId = usuario?.id || 'anonimo';
+  const key = `descargas_pdf_${userId}`;
+  
+  const info = {
+    usadas: descargasUsadas.value,
+    limite: limiteDescargas.value,
+    ultimaDescarga: new Date().toISOString()
+  };
+  
+  localStorage.setItem(key, JSON.stringify(info));
+}
+
+async function generarPDF() {
+  // Verificar límite antes de proceder - siempre mostrar modal si está bloqueado
+  if (limiteAlcanzado.value) {
+    mostrarModalLimite.value = true;
     return;
   }
 
-  loading.value = true;
+  // Asegurar que el DOM y recursos estén listos
+  await nextTick();
+  await new Promise(r => setTimeout(r, 150));
+  generando.value = true;
+  
+  const opciones = {
+    margin: 0,
+    filename: 'hoja-de-vida.pdf',
+    image: { type: 'pdf', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
+  
   try {
-    const res = await axios.post("/login", {
-      email: email.value,
-      password: password.value,
-    });
-
-    const { token, usuario } = res.data;
-    localStorage.setItem("token", token);
-    localStorage.setItem("usuario", JSON.stringify(usuario));
-    const hojaStore = useHojaVidaStore();
-    await hojaStore.cargarHojaDeVida();
-
-    router.push(usuario.roles.includes("admin") ? "/admin" : "/panel/Hoja1");
-  } catch (e) {
-    error.value =
-      e.response?.data?.mensaje || "Error de conexión: " + e.message;
+    const nombreUsuario = nombre.value?.trim() || 'usuario';
+    const nombreArchivo = `hoja de vida ${nombreUsuario}.pdf`;
+    
+    await html2pdf()
+      .set(opciones)
+      .from(documento.value)
+      .save(nombreArchivo);
+      
+    // Incrementar contador y guardar
+    descargasUsadas.value++;
+    guardarContadorDescargas();
+    
+    // Mostrar modal si se alcanzó el límite
+    if (limiteAlcanzado.value) {
+      setTimeout(() => {
+        mostrarModalLimite.value = true;
+      }, 1000);
+    }
+      
+  } catch (error) {
+    console.error('Error al generar PDF:', error);
   } finally {
-    loading.value = false;
+    generando.value = false;
   }
-};
+}
 
-const handleRegister = async () => {
-  error.value = "";
-  if (!email.value || !password.value || !nombre.value) {
-    error.value = "Completa todos los campos para registrarte";
-    return;
-  }
+function cerrarModal() {
+  mostrarModalLimite.value = false;
+  textoCopiado.value = false;
+}
 
-  loading.value = true;
+async function copiarContacto() {
   try {
-    await axios.post("/usuarios", {
-      email: email.value,
-      password: password.value,
-      nombre: nombre.value,
-      roles: ["usuario"],
-    });
-
-    modoRegistro.value = false;
-    error.value = "Registro exitoso. Ahora puedes iniciar sesión.";
-  } catch (e) {
-    error.value = e.response?.data?.mensaje || "Error al registrar";
-  } finally {
-    loading.value = false;
+    await navigator.clipboard.writeText('3145193285');
+    textoCopiado.value = true;
+    setTimeout(() => {
+      textoCopiado.value = false;
+    }, 2000);
+  } catch (error) {
+    console.error('Error al copiar:', error);
   }
-};
+}
+
+// Función para que el admin pueda resetear el contador (solo para desarrollo/testing)
+function resetearContador() {
+  descargasUsadas.value = 0;
+  guardarContadorDescargas();
+}
+
+// Exponer función para uso en consola (desarrollo)
+if (import.meta.env.DEV) {
+  window.resetearContadorPDF = resetearContador;
+}
 </script>
 
-<style scoped>
-.login-wrapper {
+<style>
+.pdf-root { background: #fff; padding: 0.3in; }
+
+/* Fuerza salto de página entre cartas sin crear página en blanco al inicio/fin */
+.carta { page-break-after: always; }
+.carta:last-child { page-break-after: auto; }
+
+/* Botón rectangular fijo "Generar PDF" */
+.pdf-button {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  padding: 12px 18px;
+  min-width: 180px;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  z-index: 1000;
+}
+
+.pdf-button:hover:not(:disabled) { 
+  transform: translateY(-2px); 
+  box-shadow: 0 12px 24px rgba(0,0,0,0.25); 
+}
+
+.pdf-button:disabled { 
+  opacity: 0.75; 
+  cursor: not-allowed; 
+  transform: none; 
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
+}
+
+.pdf-button.limite-alcanzado {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  cursor: pointer;
+  opacity: 1;
+}
+
+.pdf-button.limite-alcanzado:hover {
+  transform: translateY(-2px); 
+  box-shadow: 0 12px 24px rgba(239, 68, 68, 0.4);
+}
+
+.btn-icon { font-size: 18px; line-height: 1; }
+.btn-text { font-size: 14px; }
+
+/* Contador visual */
+.contador-info {
+  position: fixed;
+  right: 24px;
+  bottom: 90px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-size: 12px;
+  color: #666;
+  z-index: 999;
+}
+
+.contador-text {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.contador-barra {
+  width: 120px;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.contador-progreso {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  transition: width 0.3s ease;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  animation: slideIn 0.3s ease;
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
   justify-content: space-between;
   align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #e0e7ff, #fff);
-  padding: 2rem 0;
+  background: #f9fafb;
 }
 
-.login-card {
-  background: white;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
-  width: 100%;
-  text-align: center;
-  margin: auto 0;
+.modal-header h3 {
+  margin: 0;
+  color: #ef4444;
+  font-size: 1.25rem;
 }
 
-.login-card h2 {
-  margin-bottom: 0.5rem;
-  font-size: 1.75rem;
-  color: #3730a3;
-}
-
-.login-card p {
-  margin-bottom: 2rem;
-  color: #555;
-}
-
-form input {
-  width: 100%;
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  border: 1px solid #cbd5e0;
-  border-radius: 5px;
-  font-size: 1rem;
-}
-
-form button {
-  width: 100%;
-  padding: 0.75rem;
-  background: #4f46e5;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-form button:hover {
-  background: #4338ca;
-}
-
-form button:disabled {
-  background: #9ca3af;
-  cursor: not-allowed;
-}
-
-.toggle-btn {
+.close-btn {
   background: none;
   border: none;
-  color: #4f46e5;
+  font-size: 1.5rem;
   cursor: pointer;
-  text-decoration: underline;
-  font-weight: bold;
+  color: #6b7280;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s ease;
 }
 
-.toggle-btn:hover {
-  color: #4338ca;
+.close-btn:hover {
+  background: #f3f4f6;
 }
 
-.error {
-  color: red;
-  margin-top: 1rem;
-  font-weight: bold;
+.modal-body {
+  padding: 1.5rem;
+  line-height: 1.6;
 }
 
-/* Estilos del pie de página */
-.login-footer {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  border-top: 1px solid #e5e7eb;
-  backdrop-filter: blur(10px);
-  margin-top: 2rem;
-}
-
-.footer-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+.modal-body p {
+  margin-bottom: 1rem;
+  color: #374151;
 }
 
 .contact-info {
-  margin-bottom: 1.5rem;
-}
-
-.contact-info h4 {
-  color: #3730a3;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
+  background: #f3f4f6;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
 }
 
 .contact-item {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin: 0 1rem 0.5rem 0;
-  color: #555;
-  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.contact-item:last-child {
+  margin-bottom: 0;
 }
 
 .contact-icon {
   font-size: 1rem;
 }
 
-.social-links {
-  margin-bottom: 1.5rem;
+.note {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-style: italic;
 }
 
-.social-link {
-  display: inline-block;
-  margin: 0 1rem;
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  background: #f9fafb;
+}
+
+.btn-primary, .btn-secondary {
   padding: 0.5rem 1rem;
-  color: #4f46e5;
-  text-decoration: none;
-  border: 1px solid #4f46e5;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-size: 0.875rem;
 }
 
-.social-link:hover {
-  background: #4f46e5;
+.btn-primary {
+  background: #3b82f6;
   color: white;
 }
 
-.footer-bottom {
-  border-top: 1px solid #e5e7eb;
-  padding-top: 1rem;
+.btn-primary:hover {
+  background: #2563eb;
 }
 
-.footer-bottom p {
-  color: #6b7280;
-  font-size: 0.85rem;
-  margin-bottom: 0.5rem;
+.btn-secondary {
+  background: #6b7280;
+  color: white;
 }
 
-.footer-links {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  flex-wrap: wrap;
+.btn-secondary:hover {
+  background: #4b5563;
 }
 
-.footer-links a {
-  color: #6b7280;
-  text-decoration: none;
-  font-size: 0.85rem;
-  transition: color 0.3s ease;
+/* Spinner */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-.footer-links a:hover {
-  color: #4f46e5;
+@keyframes spin { 
+  from { transform: rotate(0deg); } 
+  to { transform: rotate(360deg); } 
 }
 
-/* Responsivo */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-20px) scale(0.95); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Ocultar elementos marcados solo en generación PDF */
+.generando-pdf .no-imprimir { display: none !important; }
+
+/* Responsive */
 @media (max-width: 768px) {
-  .login-wrapper {
-    padding: 1rem;
+  .modal-content {
+    width: 95%;
+    margin: 1rem;
   }
   
-  .contact-item {
-    display: block;
-    margin: 0.5rem 0;
-  }
-  
-  .social-links {
-    display: flex;
+  .modal-footer {
     flex-direction: column;
-    gap: 0.5rem;
-    align-items: center;
   }
   
-  .social-link {
-    margin: 0;
+  .contador-info {
+    right: 16px;
+    bottom: 80px;
   }
   
-  .footer-links {
-    flex-direction: column;
-    gap: 0.5rem;
+  .pdf-button {
+    right: 16px;
+    bottom: 16px;
+    min-width: 160px;
   }
 }
 </style>
