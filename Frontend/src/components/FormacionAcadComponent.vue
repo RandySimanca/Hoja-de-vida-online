@@ -73,18 +73,18 @@
               <label for="mes-grado">MES</label>
               <select id="mes-grado" class="form-control" v-model="mesGrado">
                 <option disabled value="">Selecciona un mes</option>
-                <option value="01">Enero</option>
-                <option value="02">Febrero</option>
-                <option value="03">Marzo</option>
-                <option value="04">Abril</option>
-                <option value="05">Mayo</option>
-                <option value="06">Junio</option>
-                <option value="07">Julio</option>
-                <option value="08">Agosto</option>
-                <option value="09">Septiembre</option>
-                <option value="10">Octubre</option>
-                <option value="11">Noviembre</option>
-                <option value="12">Diciembre</option>
+                <option value="01">Ene</option>
+                <option value="02">Feb</option>
+                <option value="03">Mar</option>
+                <option value="04">Abr</option>
+                <option value="05">May</option>
+                <option value="06">Jun</option>
+                <option value="07">Jul</option>
+                <option value="08">Agos</option>
+                <option value="09">Sept</option>
+                <option value="10">Oct</option>
+                <option value="11">Nov</option>
+                <option value="12">Dic</option>
               </select>
             </div>
             <div class="form-group col-2" style="width: 60px">
