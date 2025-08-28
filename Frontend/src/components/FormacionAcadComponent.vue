@@ -136,49 +136,58 @@
               <th></th>
             </tr>
           </thead>
-          <tbody>
+         <tbody>
             <tr v-for="(formacion, index) in formacionesSuperior" :key="index">
               <td class="col-modalidad">
-  <select class="form-control" v-model="formacion.modalidad">
-    <option disabled value="">Seleccione modalidad</option>
-    <option value="TC">TC</option>
-    <option value="TL">TL</option>
-    <option value="TE">TE</option>
-    <option value="UN">UN</option>
-    <option value="ES">ES</option>
-    <option value="MG">MG</option>
-    <option value="DOC">DOC</option>
-  </select>
-</td>
+                <select class="form-control" v-model="formacion.modalidad">
+                  <option disabled value="">Seleccione modalidad</option>
+                  <option value="TC">TC</option>
+                  <option value="TL">TL</option>
+                  <option value="TE">TE</option>
+                  <option value="UN">UN</option>
+                  <option value="ES">ES</option>
+                  <option value="MG">MG</option>
+                  <option value="DOC">DOC</option>
+                </select>
+              </td>
 
               <td class="col-modalidad">
                 <input class="form-control" v-model="formacion.semestres" />
               </td>
               <td>
-                <input 
-                  type="radio" 
-                  :value="'SI'" 
-                  v-model="formacion.graduado" 
+                <input
+                  type="radio"
+                  :value="'SI'"
+                  v-model="formacion.graduado"
                   :name="'graduado-' + index"
                 />
               </td>
               <td>
-                <input 
-                  type="radio" 
-                  :value="'NO'" 
-                  v-model="formacion.graduado" 
+                <input
+                  type="radio"
+                  :value="'NO'"
+                  v-model="formacion.graduado"
                   :name="'graduado-' + index"
                 />
-              </td class="col-semestre">
+              </td>
               <td><input class="form-control" v-model="formacion.titulo" /></td>
-              <td class=" col-modalidad">
-                <input class="form-control" v-model="formacion.mesTermino" placeholder="mm"/>
+              <td class="col-modalidad">
+                <input
+                  class="form-control"
+                  v-model="formacion.mesTermino"
+                  placeholder="mm"
+                />
               </td>
               <td class="col-modalidad">
-                <input class="form-control" v-model="formacion.anioTermino" placeholder="aaaa" />
+                <input
+                  class="form-control"
+                  v-model="formacion.anioTermino"
+                  placeholder="aaaa"
+                />
               </td>
               <td class="col-modalidad">
-                <input class="form-control " v-model="formacion.tarjeta"/></td>
+                <input class="form-control" v-model="formacion.tarjeta" />
+              </td>
               <td>
                 <button
                   class="btn btn-danger btn-sm no-imprimir"
