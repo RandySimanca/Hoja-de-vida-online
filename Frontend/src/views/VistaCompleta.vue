@@ -49,6 +49,10 @@
               <span class="contact-icon">📞</span>
               <span>+57 314 519 3285</span>
             </div>
+               <div class="contact-item">
+              <span class="contact-icon">📧</span>
+              <span>randysimancamercado@gmail.com</span>
+            </div>
           </div>
           
           <p class="note">El administrador podrá restablecer tu contador de descargas.</p>
