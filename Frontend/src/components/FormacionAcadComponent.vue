@@ -115,27 +115,29 @@
         </p>
       </div>
 
-      <!-- Tabla solo se muestra si hay formaciones -->
+       <!-- Tabla solo se muestra si hay formaciones -->
       <div v-if="formacionesSuperior.length > 0" class="tabla-container">
         <table class="table">
           <thead>
             <tr>
-              <th>MODALIDAD ACADÉMICA</th>
-              <th>No. SEMESTRES APROBADOS</th>
+              <th class="col-modalidad">MODALIDAD ACADÉMICA</th>
+              <th class="col-modalidad">No. SEMESTRES APROBADOS</th>
               <th colspan="2">GRADUADO</th>
-              <th>NOMBRE DE LOS ESTUDIOS O TÍTULO OBTENIDO</th>
-              <th colspan="2">TERMINACIÓN</th>
-              <th>No. DE TARJETA PROFESIONAL</th>
-              <th>ACCIONES</th>
+              <th class="col-titulo">
+                NOMBRE DE LOS ESTUDIOS O TÍTULO OBTENIDO
+              </th>
+              <th class="col-modalidad" colspan="2">FECHA DE TERMINACIÓN</th>
+              <th class="col-modalidad">No. DE TARJETA PROFESIONAL</th>
+              <th class="col-modalidad">ACCIONES</th>
             </tr>
             <tr>
               <th></th>
               <th></th>
-              <th>SI</th>
-              <th>NO</th>
+              <th class="col-modalidad">SI</th>
+              <th class="col-modalidad">NO</th>
               <th></th>
-              <th>MES</th>
-              <th>AÑO</th>
+              <th class="col-modalidad">MES</th>
+              <th class="col-modalidad">AÑO</th>
               <th></th>
               <th></th>
             </tr>
@@ -156,8 +158,9 @@
               </td>
 
               <td class="col-modalidad">
-                <input class="form-control" v-model="formacion.semestres" />
+                <input class="form-control11" v-model="formacion.semestres" />
               </td>
+
               <td>
                 <input
                   type="radio"
@@ -174,24 +177,28 @@
                   :name="'graduado-' + index"
                 />
               </td>
-              <td><input class="form-control" v-model="formacion.titulo" /></td>
-              <td class="col-modalidad">
+              <td class="col-titulo">
+                <input class="form-control11" v-model="formacion.titulo" />
+              </td>
+
+              <td class="col-mes">
                 <input
-                  class="form-control"
+                  class="form-control11"
                   v-model="formacion.mesTermino"
                   placeholder="mm"
                 />
               </td>
-              <td class="col-modalidad">
+              <td class="col-anio">
                 <input
-                  class="form-control"
+                  class="form-control11"
                   v-model="formacion.anioTermino"
                   placeholder="aaaa"
                 />
               </td>
               <td class="col-modalidad">
-                <input class="form-control" v-model="formacion.tarjeta" />
+                <input class="form-control11" v-model="formacion.tarjeta" />
               </td>
+
               <td>
                 <button
                   class="btn btn-danger btn-sm no-imprimir"
