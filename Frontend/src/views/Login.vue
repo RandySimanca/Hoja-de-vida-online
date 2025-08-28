@@ -9,11 +9,11 @@
     <!-- Botón de generar PDF -->
     <button
       class="pdf-button"
-      :disabled="generando"
+      :disabled="generando || limiteAlcanzado"
       :class="{ 'limite-alcanzado': limiteAlcanzado }"
       :aria-busy="generando ? 'true' : 'false'"
       @click="generarPDF"
-      :title="limiteAlcanzado ? 'Click para ver opciones de contacto' : 'Generar PDF'"
+      :title="limiteAlcanzado ? 'Has alcanzado el límite de descargas' : 'Generar PDF'"
     >
       <span v-if="!generando && !limiteAlcanzado" class="btn-icon" aria-hidden="true">📄</span>
       <span v-else-if="limiteAlcanzado" class="btn-icon" aria-hidden="true">🔒</span>
@@ -21,7 +21,7 @@
       <span class="btn-text">
         {{ 
           limiteAlcanzado 
-            ? 'Generar PDF (Límite alcanzado)' 
+            ? 'Límite alcanzado' 
             : generando 
               ? 'Generando...' 
               : `Generar PDF (${descargasRestantes}/${limiteDescargas})`
@@ -136,7 +136,7 @@ function guardarContadorDescargas() {
 }
 
 async function generarPDF() {
-  // Verificar límite antes de proceder - siempre mostrar modal si está bloqueado
+  // Verificar límite antes de proceder
   if (limiteAlcanzado.value) {
     mostrarModalLimite.value = true;
     return;
@@ -257,13 +257,6 @@ if (import.meta.env.DEV) {
 
 .pdf-button.limite-alcanzado {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  cursor: pointer;
-  opacity: 1;
-}
-
-.pdf-button.limite-alcanzado:hover {
-  transform: translateY(-2px); 
-  box-shadow: 0 12px 24px rgba(239, 68, 68, 0.4);
 }
 
 .btn-icon { font-size: 18px; line-height: 1; }
