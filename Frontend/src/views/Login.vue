@@ -33,21 +33,21 @@
     <div v-if="mostrarModalLimite" class="modal-overlay" @click="cerrarModal">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
-          <h3>🔒 Descargas en modo gratis alcanzado</h3>
+          <h3>🔒 Límite de descargas alcanzado</h3>
           <button @click="cerrarModal" class="close-btn">&times;</button>
         </div>
         <div class="modal-body">
-          <p>Has alcanzado el límite máximo de <strong>{{ limiteDescargas }} descargas</strong> de tu hoja de vida en PDF en elmodo gratuito.</p>
+          <p>Has alcanzado el límite máximo de <strong>{{ limiteDescargas }} descargas</strong> de tu hoja de vida en PDF.</p>
           <p>Para continuar descargando, contacta al administrador del sistema:</p>
           
           <div class="contact-info">
             <div class="contact-item">
               <span class="contact-icon">📧</span>
-              <span>Randy Simanca</span>
+              <span>admin@tuempresa.com</span>
             </div>
             <div class="contact-item">
               <span class="contact-icon">📞</span>
-              <span>+57 314 519 3285</span>
+              <span>+57 (1) 234-5678</span>
             </div>
           </div>
           
@@ -56,7 +56,7 @@
         <div class="modal-footer">
           <button @click="cerrarModal" class="btn-secondary">Cerrar</button>
           <button @click="copiarContacto" class="btn-primary">
-            {{ textoCopiado ? '✓ Copiado' : 'Copiar numero de contacto' }}
+            {{ textoCopiado ? '✓ Copiado' : 'Copiar Email' }}
           </button>
         </div>
       </div>
@@ -91,7 +91,7 @@ const route = useRoute();
 const usuarioStore = useUsuarioStore();
 
 // Sistema de contador de descargas
-const limiteDescargas = ref(2); // Límite configurable
+const limiteDescargas = ref(5); // Límite configurable
 const descargasUsadas = ref(0);
 const mostrarModalLimite = ref(false);
 const textoCopiado = ref(false);
@@ -190,7 +190,7 @@ function cerrarModal() {
 
 async function copiarContacto() {
   try {
-    await navigator.clipboard.writeText('3145193285');
+    await navigator.clipboard.writeText('admin@tuempresa.com');
     textoCopiado.value = true;
     setTimeout(() => {
       textoCopiado.value = false;
