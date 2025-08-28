@@ -43,19 +43,21 @@
         accept=".jpg,.jpeg,.png"
         @change="mostrarFirma"
       />
-      <div v-if="firmaUrl">
-        <img
-          :src="firmaUrl"
-          alt="Firma cargada"
-          style="margin-top: 10px; max-width: 200px; height: auto"
-        />
-      </div>
-      <div class="firma-header">
-        <label for="firma">FIRMA DEL SERVIDOR PÚBLICO O CONTRATISTA</label>
-        <button @click="guardarFirma" class="no-imprimir">
-          Guardar diligenciamiento
-        </button>
-      </div>
+    </div>
+    <div style="display: block;" v-if="firmaUrl">
+      <img
+        :src="firmaUrl"
+        alt="Firma cargada"
+        style="max-width: 150px; height: auto ;"
+      />
+      
+     <label for="firma">FIRMA DEL SERVIDOR PÚBLICO O CONTRATISTA</label>
+    </div>
+    <div style="margin-top: -40px;">
+    
+      <button style="margin-left: 600px;" @click="guardarFirma" class="form-group no-imprimir">
+        Guardar diligenciamiento
+      </button>
     </div>
   </div>
 </template>
@@ -132,4 +134,6 @@ const guardarFirma = async () => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+
+</style>
