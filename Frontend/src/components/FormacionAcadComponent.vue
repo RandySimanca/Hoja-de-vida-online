@@ -559,36 +559,57 @@ export default {
   background-color: #218838 !important;
 }
 
+/* Ajuste general para inputs */
+
+@media print {
+  .col-modalidad-academica,
+  .col-semestres {
+    width: 70px !important;
+  }
+
+  .col-titulo {
+    width: 300px !important;
+  }
+
+  select,
+  input {
+    font-size: 9px !important;
+    padding: 1px !important;
+    height: auto !important;
+    vertical-align: top !important;
+  }
+}
+
 /* Columnas angostas */
 .col-modalidad,
 .col-semestres {
-  width: 80px;
+  width: 20px;
   max-width: 100px;
-  white-space: nowrap;
+
+
 }
 
 /* Columna más ancha para título */
 .col-titulo {
-  width: 240px;
+  width: 280px;
   max-width: 100%;
 }
 
-/* Ajuste general para inputs */
-.form-control1 {
+/* Ajuste para inputs internos */
+.col-modalidad select,
+.col-semestres input,
+.col-titulo input {
   width: 100%;
-  font-size: 10px;
+  font-size: 12px;
   padding: 2px 4px;
   box-sizing: border-box;
 }
 
-/* Responsive para impresión */
-@media print {
-  .no-imprimir {
-    display: none !important;
-  }
-
-  .sin-formaciones-mensaje {
-    display: none !important;
-  }
+.form-control11 {
+  width: 100%;
+  padding: 3px; /* Reducido */
+  border: 1px solid #ccc;
+  box-sizing: border-box;
 }
+
 </style>
