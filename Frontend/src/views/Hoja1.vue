@@ -619,18 +619,17 @@ form {
 }
 
 .form-control {
-  width: 100%;
-  padding: 3px;
+  width: 70%;
+  padding: 0px;
   box-sizing: border-box;
   height: 22px; /* Reducido */
 }
 
 .form-control1 {
   width: 100%;
-  padding: 5px; /* Reducido */
+  padding: 3px; /* Reducido */
   border: 1px solid #ccc;
   box-sizing: border-box;
-  font-size: 16px; /* Reducido */
 }
 
 .form-control2 {
@@ -701,7 +700,7 @@ form {
   flex: 10 0 10%;
 }
 .col-3 {
-  flex: 0 0 31%;
+  flex: 0 0 30%;
 }
 .col-4 {
   flex: 0 0 23%;
@@ -732,31 +731,31 @@ form {
     page-break-after: always !important;
     box-sizing: border-box;
   }
-
+  
   .carta-compacta {
     height: 10.4in !important; /* Altura máxima aprovechable */
     overflow: hidden !important;
   }
-
+  
   .carta:last-child {
     page-break-after: auto;
   }
-
+  
   /* Optimizaciones adicionales para impresión */
   .section {
     padding: 0.2rem !important;
   }
-
+  
   .table th,
   .table td {
     font-size: 9px !important;
     padding: 1px !important;
   }
-
+  
   .form-group label {
     font-size: 9px !important;
   }
-
+  
   /* Ocultar solo al imprimir */
   .no-imprimir {
     display: none !important;
