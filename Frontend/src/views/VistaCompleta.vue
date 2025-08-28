@@ -42,7 +42,7 @@
           
           <div class="contact-info">
             <div class="contact-item">
-              <span class="contact-icon">📧</span>
+              <span class="contact-icon">🙋</span>
               <span>Randy Simanca</span>
             </div>
             <div class="contact-item">
