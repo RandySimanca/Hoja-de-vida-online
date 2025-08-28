@@ -540,13 +540,12 @@ export default {
   box-sizing: border-box;
 }
 
-
 /* Responsive para impresión */
 @media print {
   .no-imprimir {
     display: none !important;
   }
-  
+
   .sin-formaciones-mensaje {
     display: none !important;
   }
