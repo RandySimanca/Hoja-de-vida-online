@@ -632,6 +632,13 @@ form {
   box-sizing: border-box;
 }
 
+  .form-control11 {
+  width: 100%;
+  padding: 3px; /* Reducido */
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
 .form-control2 {
   width: 50%;
   padding: 3px; /* Reducido */
