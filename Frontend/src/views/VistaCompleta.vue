@@ -220,7 +220,6 @@ function generarIdentificadorDispositivo() {
   }
 
   deviceKeys.forEach((key) => localStorage.setItem(key, storedDeviceId));
-
   deviceId.value = storedDeviceId;
 }
 
@@ -256,10 +255,49 @@ function guardarContadorDescargas() {
 }
 
 async function generarPDF() {
+  // Verificar límite antes de proceder - siempre mostrar modal si está bloqueado
   if (limiteAlcanzado.value) {
     mostrarModalLimite.value = true;
     return;
   }
+
+  // Asegurar que el DOM y recursos estén listos
+  await nextTick();
+  await new Promise((r) => setTimeout(r, 150));
+  generando.value = true;
+
+  const opciones = {
+    margin: 0,
+    filename: "hoja-de-vida.pdf",
+    image: { type: "pdf", quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
+    jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+    pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+  };
+
+  try {
+    const nombreUsuario = nombre.value?.trim() || "usuario";
+    const nombreArchivo = `hoja de vida ${nombreUsuario}.pdf`;
+
+    await html2pdf().set(opciones).from(documento.value).save(nombreArchivo);
+
+    // Incrementar contador y guardar
+    descargasUsadas.value++;
+    guardarContadorDescargas();
+
+    // Mostrar modal si se alcanzó el límite
+    if (limiteAlcanzado.value) {
+      setTimeout(() => {
+        mostrarModalLimite.value = true;
+      }, 1000);
+    }
+  } catch (error) {
+    console.error("Error al generar PDF:", error);
+  } finally {
+    generando.value = false;
+  }
+}
+
 
   await nextTick();
   generando.value = true;
@@ -315,6 +353,322 @@ function verificarCodigo() {
 </script>
 
 <style>
+  
+.pdf-root {
+  background: #fff;
+  padding: 0.3in;
+}
+
+/* Fuerza salto de página entre cartas sin crear página en blanco al inicio/fin */
+.carta {
+  page-break-after: always;
+}
+.carta:last-child {
+  page-break-after: auto;
+}
+
+/* Botón rectangular fijo "Generar PDF" */
+.pdf-button {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  padding: 12px 18px;
+  min-width: 180px;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  z-index: 1000;
+}
+
+.pdf-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+}
+
+.pdf-button:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.pdf-button.limite-alcanzado {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  cursor: pointer;
+  opacity: 1;
+}
+
+.pdf-button.limite-alcanzado:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(239, 68, 68, 0.4);
+}
+
+.btn-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+.btn-text {
+  font-size: 14px;
+}
+
+/* Contador visual */
+.contador-info {
+  position: fixed;
+  right: 24px;
+  bottom: 90px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-size: 12px;
+  color: #666;
+  z-index: 999;
+}
+
+.contador-text {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.contador-barra {
+  width: 120px;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.contador-progreso {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  transition: width 0.3s ease;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease;
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9fafb;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #ef4444;
+  font-size: 1.25rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #f3f4f6;
+}
+
+.modal-body {
+  padding: 1.5rem;
+  line-height: 1.6;
+}
+
+.modal-body p {
+  margin-bottom: 1rem;
+  color: #374151;
+}
+
+.contact-info {
+  background: #f3f4f6;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.contact-item:last-child {
+  margin-bottom: 0;
+}
+
+.contact-icon {
+  font-size: 1rem;
+}
+
+.note {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.debug-info {
+  font-size: 0.75rem;
+  color: #6b7280;
+  background: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  background: #f9fafb;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-size: 0.875rem;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #4b5563;
+}
+
+/* Spinner */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Ocultar elementos marcados solo en generación PDF */
+.generando-pdf .no-imprimir {
+  display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    margin: 1rem;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .contador-info {
+    right: 16px;
+    bottom: 80px;
+  }
+
+  .pdf-button {
+    right: 16px;
+    bottom: 16px;
+    min-width: 160px;
+  }
+}
 .pdf-root { background: #fff; padding: 0.3in; }
 .carta { page-break-after: always; }
 .carta:last-child { page-break-after: auto; }
@@ -335,7 +689,6 @@ function verificarCodigo() {
 .generando-pdf .no-imprimir { display:none !important; }
 
 /* Modal y botones omitido por brevedad (usa tu CSS original) */
-
 .codigo-desbloqueo{ display:flex; flex-direction:column; gap:0.5rem; margin:0.5rem 0; }
 .codigo-desbloqueo input{ padding:0.5rem; border-radius:6px; border:1px solid #ccc; }
 .codigo-desbloqueo .btn-primary{ width:max-content; }
