@@ -321,7 +321,7 @@ async function generarPDF() {
   } finally {
     generando.value = false;
   }
-}
+
 
 function cerrarModal() {
   mostrarModalLimite.value = false;
