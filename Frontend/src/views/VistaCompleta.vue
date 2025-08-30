@@ -128,7 +128,7 @@ const route = useRoute();
 const usuarioStore = useUsuarioStore();
 
 // Sistema de contador de descargas
-const limiteDescargas = ref(2); // Límite configurable
+const limiteDescargas = ref(6); // Límite configurable
 const descargasUsadas = ref(0);
 const mostrarModalLimite = ref(false);
 const textoCopiado = ref(false);
