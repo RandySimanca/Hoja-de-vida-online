@@ -11,16 +11,14 @@
       <Hoja3 />
     </div>
 
-    <!-- Botón de generar PDF -->
+    <!-- Botón flotante para generar PDF -->
     <button
       class="pdf-button"
       :disabled="generando"
       :class="{ 'limite-alcanzado': limiteAlcanzado }"
       :aria-busy="generando ? 'true' : 'false'"
       @click="generarPDF"
-      :title="
-        limiteAlcanzado ? 'Click para ver opciones de contacto' : 'Generar PDF'
-      "
+      :title="limiteAlcanzado ? 'Click para ver opciones de contacto' : 'Generar PDF'"
     >
       <span
         v-if="!generando && !limiteAlcanzado"
@@ -34,7 +32,6 @@
       <span v-else class="spinner" aria-hidden="true"></span>
       <span class="btn-text">
         {{
-
           limiteAlcanzado
             ? "Generar PDF (Límite alcanzado)"
             : generando
@@ -44,7 +41,7 @@
       </span>
     </button>
 
-    <!-- Modal de límite alcanzado -->
+    <!-- Modal de límite alcanzado y desbloqueo -->
     <div v-if="mostrarModalLimite" class="modal-overlay" @click="cerrarModal">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
@@ -80,8 +77,8 @@
             El administrador podrá restablecer tu contador de descargas o ingresa un código de desbloqueo.
           </p>
 
-          <!-- Input de código de desbloqueo -->
-          <div class="codigo-desbloqueo" v-if="limiteAlcanzado">
+          <!-- Input de códigos de desbloqueo -->
+          <div class="codigo-desbloqueo">
             <label for="codigo" class="block font-medium mb-1">
               Ingresa código de desbloqueo:
             </label>
@@ -98,7 +95,7 @@
             <p v-if="mensajeCodigo" class="mensaje-codigo">{{ mensajeCodigo }}</p>
           </div>
 
-          <!-- Información de depuración (solo en desarrollo) -->
+          <!-- Debug info (solo desarrollo) -->
           <div v-if="$route.query.debug === 'true'" class="debug-info">
             <hr style="margin: 1rem 0" />
             <p><strong>Debug Info:</strong></p>
@@ -109,14 +106,11 @@
         </div>
         <div class="modal-footer">
           <button @click="cerrarModal" class="btn-secondary">Cerrar</button>
-          <button @click="copiarContacto" class="btn-primary">
-            {{ textoCopiado ? "✓ Copiado" : "Copiar numero de contacto" }}
-          </button>
         </div>
       </div>
     </div>
 
-    <!-- Contador visual (opcional - para mostrar al usuario) -->
+    <!-- Contador visual (opcional) -->
     <div class="contador-info" v-if="!limiteAlcanzado">
       <span class="contador-text"
         >Descargas disponibles: {{ descargasRestantes }}</span
@@ -132,33 +126,32 @@
 </template>
 
 <script setup>
-import { ref, nextTick, computed, onMounted } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 import html2pdf from "html2pdf.js";
 import Hoja1 from "./Hoja1.vue";
 import Hoja2 from "./Hoja2.vue";
 import Hoja3 from "./Hoja3.vue";
 import { useRoute } from "vue-router";
-import { useUsuarioStore } from "../stores/usuarios";
 
 const documento = ref(null);
 const generando = ref(false);
 const nombre = ref("Invitado");
 const route = useRoute();
-const usuarioStore = useUsuarioStore();
 
-// Sistema de contador de descargas
-const limiteDescargas = ref(6); // Límite configurable
+// Contadores
+const limiteDescargas = ref(6);
 const descargasUsadas = ref(0);
 const mostrarModalLimite = ref(false);
-const textoCopiado = ref(false);
-const deviceId = ref("");
-const browserFingerprint = ref("");
 
-// Input y mensajes de código
+// Desbloqueo
 const codigoIngresado = ref("");
 const mensajeCodigo = ref("");
 
-// Computed properties
+// Identificadores
+const deviceId = ref("");
+const browserFingerprint = ref("");
+
+// Computed
 const descargasRestantes = computed(
   () => limiteDescargas.value - descargasUsadas.value
 );
@@ -174,6 +167,7 @@ onMounted(() => {
   cargarContadorDescargas();
 });
 
+// Funciones de identificador de dispositivo
 function generarIdentificadorDispositivo() {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
@@ -208,7 +202,6 @@ function generarIdentificadorDispositivo() {
   ];
 
   let storedDeviceId = null;
-
   for (const key of deviceKeys) {
     const stored = localStorage.getItem(key);
     if (stored) {
@@ -238,8 +231,6 @@ function generarIdentificadorDispositivo() {
 
 function getUniqueIdentifier() {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
-  const userId = usuario?.id || usuario?.email || usuario?.nombre || "anonimo";
-
   return {
     fingerprint: `cv_pdf_${browserFingerprint.value}`,
     device: `cv_pdf_device_${deviceId.value}`,
@@ -251,40 +242,35 @@ function getUniqueIdentifier() {
   };
 }
 
+// Contador
 function cargarContadorDescargas() {
   const keys = getUniqueIdentifier();
-
   let datosContador = null;
-  let keyUsada = null;
   let maxUsadas = 0;
-
-  for (const [keyName, key] of Object.entries(keys)) {
+  for (const key of Object.values(keys)) {
     const datos = localStorage.getItem(key);
     if (datos) {
       try {
-        const parsedData = JSON.parse(datos);
-        if (parsedData.usadas > maxUsadas) {
-          maxUsadas = parsedData.usadas;
-          datosContador = parsedData;
-          keyUsada = key;
+        const parsed = JSON.parse(datos);
+        if (parsed.usadas > maxUsadas) {
+          maxUsadas = parsed.usadas;
+          datosContador = parsed;
         }
       } catch (e) {}
     }
   }
 
-  if (datosContador && maxUsadas > 0) {
+  if (datosContador) {
     descargasUsadas.value = maxUsadas;
-    limiteDescargas.value = datosContador.limite || 1;
+    limiteDescargas.value = datosContador.limite || 6;
     guardarContadorDescargas();
   } else {
     descargasUsadas.value = 0;
-    limiteDescargas.value = 1;
   }
 }
 
 function guardarContadorDescargas() {
   const keys = getUniqueIdentifier();
-
   const info = {
     usadas: descargasUsadas.value,
     limite: limiteDescargas.value,
@@ -292,10 +278,9 @@ function guardarContadorDescargas() {
     dispositivo: deviceId.value,
     fingerprint: browserFingerprint.value,
     timestamp: Date.now(),
-    version: "2.0",
   };
 
-  Object.entries(keys).forEach(([keyName, key]) => {
+  Object.values(keys).forEach((key) => {
     try {
       localStorage.setItem(key, JSON.stringify(info));
     } catch (e) {}
@@ -306,6 +291,7 @@ function guardarContadorDescargas() {
   } catch (e) {}
 }
 
+// Generar PDF
 async function generarPDF() {
   if (limiteAlcanzado.value) {
     mostrarModalLimite.value = true;
@@ -313,12 +299,11 @@ async function generarPDF() {
   }
 
   await nextTick();
-  await new Promise((r) => setTimeout(r, 150));
   generando.value = true;
 
   const opciones = {
     margin: 0,
-    filename: "hoja-de-vida.pdf",
+    filename: `hoja-de-vida.pdf`,
     image: { type: "pdf", quality: 0.98 },
     html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
     jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
@@ -326,11 +311,7 @@ async function generarPDF() {
   };
 
   try {
-    const nombreUsuario = nombre.value?.trim() || "usuario";
-    const nombreArchivo = `hoja de vida ${nombreUsuario}.pdf`;
-
-    await html2pdf().set(opciones).from(documento.value).save(nombreArchivo);
-
+    await html2pdf().set(opciones).from(documento.value).save();
     descargasUsadas.value++;
     guardarContadorDescargas();
 
@@ -346,29 +327,16 @@ async function generarPDF() {
   }
 }
 
+// Modal
 function cerrarModal() {
   mostrarModalLimite.value = false;
-  textoCopiado.value = false;
   codigoIngresado.value = "";
   mensajeCodigo.value = "";
 }
 
-async function copiarContacto() {
-  try {
-    await navigator.clipboard.writeText("3145193285");
-    textoCopiado.value = true;
-    setTimeout(() => {
-      textoCopiado.value = false;
-    }, 2000);
-  } catch (error) {
-    console.error("Error al copiar:", error);
-  }
-}
-
-// Validar código de desbloqueo
+// Validar códigos de desbloqueo
 function validarCodigo() {
   const codigosValidos = ["DESBLOQUEO1", "LIBERARPDF", "ADMIN123"];
-
   if (codigosValidos.includes(codigoIngresado.value.trim().toUpperCase())) {
     descargasUsadas.value = 0;
     guardarContadorDescargas();
@@ -383,9 +351,9 @@ function validarCodigo() {
 </script>
 
 <style>
-/* ... Mantén todo tu CSS anterior ... */
+/* Mantengo todos los estilos originales del botón flotante, modal y contador */
+/* ... aquí puedes copiar exactamente los estilos de tu componente anterior ... */
 
-/* Input de código de desbloqueo */
 .input-codigo {
   width: 100%;
   padding: 8px 10px;
