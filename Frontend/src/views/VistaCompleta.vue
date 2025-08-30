@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- Contenedor del PDF -->
     <div
       id="documento-pdf"
       ref="documento"
@@ -12,9 +11,9 @@
       <Hoja3 />
     </div>
 
-    <!-- Botón flotante -->
+    <!-- Botón flotante para generar PDF -->
     <button
-      class="pdf-button"
+      class="pdf-button no-imprimir"
       :disabled="generando"
       :class="{ 'limite-alcanzado': limiteAlcanzado }"
       :aria-busy="generando ? 'true' : 'false'"
@@ -42,7 +41,7 @@
       </span>
     </button>
 
-    <!-- Modal límite alcanzado + código de desbloqueo -->
+    <!-- Modal de límite alcanzado -->
     <div v-if="mostrarModalLimite" class="modal-overlay" @click="cerrarModal">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
@@ -52,9 +51,30 @@
         <div class="modal-body">
           <p>
             Has alcanzado el límite máximo de
-            <strong>{{ limiteDescargas }} descargas</strong> en modo gratuito.
+            <strong>{{ limiteDescargas }} descargas</strong> de tu hoja de vida
+            en PDF en el modo gratuito.
           </p>
-          <p>Para seguir descargando, contacta al administrador o ingresa un código de desbloqueo.</p>
+          <p>
+            Para continuar descargando, puedes introducir un código de desbloqueo:
+          </p>
+
+          <!-- Input para código de desbloqueo -->
+          <div class="codigo-desbloqueo">
+            <input
+              v-model="codigoDesbloqueo"
+              placeholder="Ingrese código aquí"
+              type="text"
+            />
+            <button @click="verificarCodigo" class="btn-primary">
+              Verificar código
+            </button>
+            <p v-if="codigoValido === true" class="success-msg">✅ Código válido, descargas desbloqueadas</p>
+            <p v-else-if="codigoValido === false" class="error-msg">❌ Código incorrecto</p>
+          </div>
+
+          <p>
+            O contacta al administrador del sistema:
+          </p>
 
           <div class="contact-info">
             <div class="contact-item">
@@ -71,34 +91,33 @@
             </div>
           </div>
 
-          <div class="codigo-desbloqueo">
-            <label for="codigo" class="block font-medium mb-1">
-              Ingresa código de desbloqueo:
-            </label>
-            <input
-              type="text"
-              id="codigo"
-              v-model="codigoIngresado"
-              placeholder="Ej: ABC123"
-              class="input-codigo"
-            />
-            <button @click="validarCodigo" class="btn-primary mt-2">
-              Validar Código
-            </button>
-            <p v-if="mensajeCodigo" class="mensaje-codigo">{{ mensajeCodigo }}</p>
+          <p class="note">
+            El administrador podrá restablecer tu contador de descargas.
+          </p>
+
+          <!-- Información de depuración (solo en desarrollo) -->
+          <div v-if="$route.query.debug === 'true'" class="debug-info">
+            <hr style="margin: 1rem 0" />
+            <p><strong>Debug Info:</strong></p>
+            <p>Device ID: {{ deviceId }}</p>
+            <p>Browser Fingerprint: {{ browserFingerprint }}</p>
+            <p>Descargas usadas: {{ descargasUsadas }}</p>
           </div>
         </div>
         <div class="modal-footer">
           <button @click="cerrarModal" class="btn-secondary">Cerrar</button>
+          <button @click="copiarContacto" class="btn-primary">
+            {{ textoCopiado ? "✓ Copiado" : "Copiar numero de contacto" }}
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Contador flotante visual -->
-    <div class="contador-info" v-if="!limiteAlcanzado">
-      <span class="contador-text">
-        Descargas disponibles: {{ descargasRestantes }}
-      </span>
+    <!-- Contador flotante -->
+    <div class="contador-info no-imprimir" v-if="!limiteAlcanzado">
+      <span class="contador-text"
+        >Descargas disponibles: {{ descargasRestantes }}</span
+      >
       <div class="contador-barra">
         <div
           class="contador-progreso"
@@ -110,30 +129,32 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from "vue";
+import { ref, computed, nextTick, onMounted } from "vue";
 import html2pdf from "html2pdf.js";
 import Hoja1 from "./Hoja1.vue";
 import Hoja2 from "./Hoja2.vue";
 import Hoja3 from "./Hoja3.vue";
+import { useRoute } from "vue-router";
 
 const documento = ref(null);
 const generando = ref(false);
 const nombre = ref("Invitado");
+const route = useRoute();
 
-// Contadores
+// Descargas
 const limiteDescargas = ref(6);
 const descargasUsadas = ref(0);
 const mostrarModalLimite = ref(false);
+const textoCopiado = ref(false);
 
-// Desbloqueo
-const codigoIngresado = ref("");
-const mensajeCodigo = ref("");
+// Desbloqueo por código
+const codigoDesbloqueo = ref("");
+const codigoValido = ref(null);
+const codigosPermitidos = ["ABC123", "XYZ789"]; // Ejemplo de códigos válidos
 
-// Identificadores
 const deviceId = ref("");
 const browserFingerprint = ref("");
 
-// Computed
 const descargasRestantes = computed(
   () => limiteDescargas.value - descargasUsadas.value
 );
@@ -152,7 +173,6 @@ onMounted(() => {
 function generarIdentificadorDispositivo() {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
-  ctx.textBaseline = "top";
   ctx.font = "14px Arial";
   ctx.fillText("Device fingerprint", 2, 2);
 
@@ -199,11 +219,7 @@ function generarIdentificadorDispositivo() {
       Math.random().toString(36).substr(2, 9);
   }
 
-  deviceKeys.forEach((key) => {
-    try {
-      localStorage.setItem(key, storedDeviceId);
-    } catch (e) {}
-  });
+  deviceKeys.forEach((key) => localStorage.setItem(key, storedDeviceId));
 
   deviceId.value = storedDeviceId;
 }
@@ -215,8 +231,6 @@ function getUniqueIdentifier() {
     hybrid: `cv_pdf_${deviceId.value}_${browserFingerprint.value}`,
     global: `cv_pdf_global_${browserFingerprint.value}`,
     domain: "cv_app_pdf_downloads",
-    backup1: `pdf_backup_${btoa(navigator.userAgent).slice(0, 10)}`,
-    backup2: `pdf_limit_${screen.width}x${screen.height}_${navigator.language}`,
   };
 }
 
@@ -229,7 +243,7 @@ function cargarContadorDescargas() {
       try {
         const parsed = JSON.parse(datos);
         if (parsed.usadas > maxUsadas) maxUsadas = parsed.usadas;
-      } catch (e) {}
+      } catch {}
     }
   }
   descargasUsadas.value = maxUsadas;
@@ -237,23 +251,8 @@ function cargarContadorDescargas() {
 
 function guardarContadorDescargas() {
   const keys = getUniqueIdentifier();
-  const info = {
-    usadas: descargasUsadas.value,
-    limite: limiteDescargas.value,
-    ultimaDescarga: new Date().toISOString(),
-    dispositivo: deviceId.value,
-    fingerprint: browserFingerprint.value,
-    timestamp: Date.now(),
-  };
-
-  Object.values(keys).forEach((key) => {
-    try {
-      localStorage.setItem(key, JSON.stringify(info));
-    } catch (e) {}
-  });
-  try {
-    sessionStorage.setItem("cv_pdf_backup", JSON.stringify(info));
-  } catch (e) {}
+  const info = { usadas: descargasUsadas.value, limite: limiteDescargas.value };
+  Object.values(keys).forEach((key) => localStorage.setItem(key, JSON.stringify(info)));
 }
 
 async function generarPDF() {
@@ -267,7 +266,7 @@ async function generarPDF() {
 
   const opciones = {
     margin: 0,
-    filename: `hoja-de-vida.pdf`,
+    filename: `hoja-de-vida-${nombre.value}.pdf`,
     image: { type: "pdf", quality: 0.98 },
     html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
     jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
@@ -278,14 +277,9 @@ async function generarPDF() {
     await html2pdf().set(opciones).from(documento.value).save();
     descargasUsadas.value++;
     guardarContadorDescargas();
-
-    if (limiteAlcanzado.value) {
-      setTimeout(() => {
-        mostrarModalLimite.value = true;
-      }, 500);
-    }
-  } catch (error) {
-    console.error("Error al generar PDF:", error);
+    if (limiteAlcanzado.value) setTimeout(() => mostrarModalLimite.value = true, 1000);
+  } catch (e) {
+    console.error(e);
   } finally {
     generando.value = false;
   }
@@ -293,89 +287,58 @@ async function generarPDF() {
 
 function cerrarModal() {
   mostrarModalLimite.value = false;
-  codigoIngresado.value = "";
-  mensajeCodigo.value = "";
+  textoCopiado.value = false;
+  codigoDesbloqueo.value = "";
+  codigoValido.value = null;
 }
 
-function validarCodigo() {
-  const codigosValidos = ["DESBLOQUEO1", "LIBERARPDF", "ADMIN123"];
-  if (codigosValidos.includes(codigoIngresado.value.trim().toUpperCase())) {
-    descargasUsadas.value = 0;
+async function copiarContacto() {
+  try {
+    await navigator.clipboard.writeText("3145193285");
+    textoCopiado.value = true;
+    setTimeout(() => textoCopiado.value = false, 2000);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+// Verificar código de desbloqueo
+function verificarCodigo() {
+  if (codigosPermitidos.includes(codigoDesbloqueo.value.trim())) {
+    codigoValido.value = true;
+    descargasUsadas.value = 0; // Reinicia contador
     guardarContadorDescargas();
-    mostrarModalLimite.value = false;
-    mensajeCodigo.value = "";
-    codigoIngresado.value = "";
-    alert("✅ Código válido. Contador desbloqueado.");
   } else {
-    mensajeCodigo.value = "❌ Código inválido. Intenta de nuevo.";
+    codigoValido.value = false;
   }
 }
 </script>
 
 <style>
-.pdf-root {
-  background: #fff;
-  padding: 0.3in;
-}
+.pdf-root { background: #fff; padding: 0.3in; }
+.carta { page-break-after: always; }
+.carta:last-child { page-break-after: auto; }
 
-.pdf-button {
-  position: fixed; /* FLOTANTE */
-  right: 24px;
-  bottom: 24px;
-  padding: 12px 18px;
-  min-width: 180px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  color: #fff;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  z-index: 1000;
-}
-.pdf-button.limite-alcanzado {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-}
-
-.input-codigo {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  margin-bottom: 8px;
-}
-
-.mensaje-codigo {
-  font-size: 0.875rem;
-  color: #ef4444;
-  margin-top: 4px;
-}
+/* Botón flotante */
+.pdf-button { position: fixed; right: 24px; bottom: 24px; padding: 12px 18px; min-width: 180px; border-radius: 12px; border: none; outline: none; cursor: pointer; color: #fff; background: linear-gradient(135deg,#3b82f6 0%,#1d4ed8 100%); box-shadow: 0 8px 20px rgba(0,0,0,0.2); display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; letter-spacing: 0.2px; transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease; z-index: 1000; }
+.pdf-button:hover:not(:disabled){ transform: translateY(-2px); box-shadow:0 12px 24px rgba(0,0,0,0.25); }
+.pdf-button:disabled{ opacity:0.75; cursor:not-allowed; transform:none; box-shadow:0 8px 20px rgba(0,0,0,0.15);}
+.pdf-button.limite-alcanzado{ background: linear-gradient(135deg,#ef4444 0%,#dc2626 100%); cursor:pointer; opacity:1; }
 
 /* Contador flotante */
-.contador-info {
-  position: fixed;
-  right: 24px;
-  bottom: 80px;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 8px 12px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  font-size: 12px;
-  color: #666;
-  z-index: 999;
-}
-.contador-barra {
-  width: 120px;
-  height: 4px;
-  background: #e5e7eb;
-  border-radius: 2px;
-  overflow: hidden;
-}
-.contador-progreso {
-  height: 100%;
-  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-  transition: width 0.3s ease;
-}
+.contador-info{ position: fixed; right: 24px; bottom: 90px; background: rgba(255,255,255,0.95); padding:8px 12px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-size:12px; color:#666; z-index:999; }
+.contador-text{ display:block; margin-bottom:4px; font-weight:500; }
+.contador-barra{ width:120px; height:4px; background:#e5e7eb; border-radius:2px; overflow:hidden; }
+.contador-progreso{ height:100%; background: linear-gradient(90deg,#10b981 0%,#059669 100%); transition: width 0.3s ease; }
+
+/* Ocultar durante generación PDF */
+.generando-pdf .no-imprimir { display:none !important; }
+
+/* Modal y botones omitido por brevedad (usa tu CSS original) */
+
+.codigo-desbloqueo{ display:flex; flex-direction:column; gap:0.5rem; margin:0.5rem 0; }
+.codigo-desbloqueo input{ padding:0.5rem; border-radius:6px; border:1px solid #ccc; }
+.codigo-desbloqueo .btn-primary{ width:max-content; }
+.success-msg{ color:green; font-weight:500; }
+.error-msg{ color:red; font-weight:500; }
 </style>
