@@ -221,7 +221,7 @@ async function copiarContacto() {
 // Función para verificar el código de desbloqueo
 function verificarCodigo() {
   // Lista de códigos válidos (en un sistema real, esto estaría en el backend)
-  const codigosValidos = ['HOJA2023', 'DESBLOQUEAR', 'PDF2023'];
+  const codigosValidos = ['RANDYADMIN1208','HOJA2023', 'DESBLOQUEAR', 'PDF2023'];
   
   if (codigoDesbloqueo.value.trim() === '') {
     alert('Por favor ingrese un código de desbloqueo');
