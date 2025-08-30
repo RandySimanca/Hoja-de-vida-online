@@ -37,7 +37,7 @@
           <button @click="cerrarModal" class="close-btn">&times;</button>
         </div>
         <div class="modal-body">
-          <p>Has alcanzado el límite máximo de <strong>{{ limiteDescargas }} descargas</strong> de tu hoja de vida en PDF en elmodo gratuito.</p>
+          <p>Has alcanzado el límite máximo de <strong>{{ limiteDescargas }} descargas</strong> de tu hoja de vida en PDF en el modo gratuito.</p>
           <p>Para continuar descargando, contacta al administrador del sistema:</p>
           
           <div class="contact-info">
@@ -49,13 +49,25 @@
               <span class="contact-icon">📞</span>
               <span>+57 314 519 3285</span>
             </div>
-               <div class="contact-item">
+            <div class="contact-item">
               <span class="contact-icon">📧</span>
               <span>randysimancamercado@gmail.com</span>
             </div>
           </div>
           
-          <p class="note">El administrador podrá restablecer tu contador de descargas.</p>
+          <div class="codigo-desbloqueo">
+            <label for="codigo-input">Código de desbloqueo:</label>
+            <input 
+              type="text" 
+              id="codigo-input" 
+              v-model="codigoDesbloqueo" 
+              placeholder="Ingrese el código proporcionado" 
+              class="codigo-input"
+            />
+            <button @click="verificarCodigo" class="btn-verificar">Verificar</button>
+          </div>
+          
+          <p class="note">El administrador podrá restablecer tu contador de descargas o proporcionarte un código de desbloqueo.</p>
         </div>
         <div class="modal-footer">
           <button @click="cerrarModal" class="btn-secondary">Cerrar</button>
@@ -99,6 +111,8 @@ const limiteDescargas = ref(1); // Límite configurable
 const descargasUsadas = ref(0);
 const mostrarModalLimite = ref(false);
 const textoCopiado = ref(false);
+const codigoDesbloqueo = ref('');
+const mensajeVerificacion = ref('');
 
 // Computed properties
 const descargasRestantes = computed(() => limiteDescargas.value - descargasUsadas.value);
@@ -202,6 +216,31 @@ async function copiarContacto() {
   } catch (error) {
     console.error('Error al copiar:', error);
   }
+}
+
+// Función para verificar el código de desbloqueo
+function verificarCodigo() {
+  // Lista de códigos válidos (en un sistema real, esto estaría en el backend)
+  const codigosValidos = ['HOJA2023', 'DESBLOQUEAR', 'PDF2023'];
+  
+  if (codigoDesbloqueo.value.trim() === '') {
+    alert('Por favor ingrese un código de desbloqueo');
+    return;
+  }
+  
+  if (codigosValidos.includes(codigoDesbloqueo.value.trim().toUpperCase())) {
+    // Código válido - resetear contador
+    descargasUsadas.value = 0;
+    guardarContadorDescargas();
+    alert('¡Código válido! Se han restablecido tus descargas disponibles.');
+    cerrarModal();
+  } else {
+    // Código inválido
+    alert('Código inválido. Por favor intente nuevamente o contacte al administrador.');
+  }
+  
+  // Limpiar el campo después de la verificación
+  codigoDesbloqueo.value = '';
 }
 
 // Función para que el admin pueda resetear el contador (solo para desarrollo/testing)
@@ -405,6 +444,53 @@ if (import.meta.env.DEV) {
   font-size: 0.875rem;
   color: #6b7280;
   font-style: italic;
+}
+
+.codigo-desbloqueo {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.codigo-desbloqueo label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.codigo-input {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.codigo-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.btn-verificar {
+  width: 100%;
+  padding: 0.75rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-verificar:hover {
+  background: #059669;
 }
 
 .modal-footer {
