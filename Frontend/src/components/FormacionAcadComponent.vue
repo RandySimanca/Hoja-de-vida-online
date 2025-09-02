@@ -177,7 +177,7 @@
                   :name="'graduado-' + index"
                 />
               </td>
-              <td class="col-titulo">
+              <td class="col-modalidad">
                 <input class="form-control11" v-model="formacion.titulo" />
               </td>
 
