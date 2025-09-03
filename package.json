@@ -1,18 +1,16 @@
 {
-  "name": "web-practica-full",
+  "name": "hoja-vida-fullstack",
   "version": "1.0.0",
   "type": "module",
+  "main": "backend/index.js",
   "scripts": {
-    "start": "cd backend && npm start",
-    "build": "npm run install-deps && npm run build-frontend",
-    "install-deps": "cd frontend && npm install && cd ../backend && npm install",
-    "build-frontend": "cd frontend && npm run build",
-    "dev": "cd backend && npm run dev"
+    "start": "cd backend && node app.js",
+    "build": "cd backend && npm install",
+    "dev": "cd backend && nodemon app.js",
+    "postinstall": "cd backend && npm install"
   },
   "engines": {
     "node": "22.x",
     "npm": "10.x"
-  },
-  "dependencies": {},
-  "devDependencies": {}
+  }
 }
