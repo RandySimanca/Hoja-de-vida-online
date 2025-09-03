@@ -1,16 +1,15 @@
-// backend/app.js - VERSIÓN DEFINITIVA CORREGIDA
+// backend/app.js - CON RUTAS CORREGIDAS
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import fs from "fs";
 import connectDB from "./config/db.js";
 import usuariosRoute from "./routes/usuarios.js";
 import loginRoute from "./routes/login.js";
 import datosPersonalesRoute from "./routes/datosPersonales.js";
 import formacionAcademicaRoute from "./routes/formacionAcademica.js";
-import hojaVidaRoute from "./routes/hojaVidaRoutes.js";
+import hojaVidaRoute from "./routes/hojaVidaRoutes.js";  // ✅ Ya no comentada
 import experienciaRoutes from "./routes/experiencia.js";
 import experienciaTotRoutes from "./routes/experienciaTot.js";
 import firmaServidorRoutes from "./routes/firmaServidor.js";
@@ -36,7 +35,7 @@ try {
   app.use("/api/login", loginRoute);
   app.use("/api/datos-personales", datosPersonalesRoute);
   app.use("/api/formacion-academica", formacionAcademicaRoute);
-  app.use("/api", hojaVidaRoute);
+  app.use("/api", hojaVidaRoute);  // ✅ Ahora funcionará: /api/hoja-vida
   app.use("/api/experiencia", experienciaRoutes);
   app.use("/api/experiencia-tot", experienciaTotRoutes);
   app.use("/api/firma-servidor", firmaServidorRoutes);
@@ -48,101 +47,44 @@ try {
   process.exit(1); 
 }
 
-// --- BÚSQUEDA SEGURA DEL FRONTEND ---
-const possibleFrontendPaths = [
-  path.resolve(__dirname, "../Frontend/dist"),
-  path.resolve(__dirname, "../frontend/dist"),
-  path.resolve(__dirname, "./dist"),
-  path.resolve(__dirname, "../dist")
-];
+// --- MODO API-ONLY ---
+console.log("⚠️ Configurando modo API-only.");
 
-let frontendDistPath = null;
-let frontendFound = false;
-
-for (const testPath of possibleFrontendPaths) {
-  try {
-    if (fs.existsSync(testPath) && fs.existsSync(path.join(testPath, 'index.html'))) {
-      frontendDistPath = testPath;
-      frontendFound = true;
-      console.log(`✅ Frontend encontrado en: ${frontendDistPath}`);
-      break;
+app.get("/", (req, res) => {
+  res.json({ 
+    message: "🚀 API Hoja de Vida funcionando",
+    status: "OK",
+    mode: "API-only",
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      usuarios: "/api/usuarios",
+      login: "/api/login", 
+      datosPersonales: "/api/datos-personales",
+      formacionAcademica: "/api/formacion-academica",
+      hojaCompleta: "/api/hoja-vida",  // ✅ Ruta corregida
+      experiencia: "/api/experiencia",
+      experienciaTot: "/api/experiencia-tot",
+      firmaServidor: "/api/firma-servidor",
+      pdf: "/api/pdf"
     }
-  } catch (err) {
-    console.log(`⚠️  Error verificando ${testPath}: ${err.message}`);
-  }
-}
-
-if (!frontendFound) {
-  console.log("⚠️  Frontend no encontrado. Configurando modo API-only.");
-}
-
-// --- CONFIGURACIÓN CONDICIONAL DEL FRONTEND ---
-if (frontendFound && frontendDistPath) {
-  try {
-    console.log(`Configurando archivos estáticos desde: ${frontendDistPath}`);
-    app.use(express.static(frontendDistPath));
-    
-    // Solo agregar catch-all si todo está bien
-    app.get("*", (req, res) => {
-      try {
-        const indexPath = path.resolve(frontendDistPath, "index.html");
-        res.sendFile(indexPath);
-      } catch (err) {
-        console.error(`Error sirviendo index.html:`, err);
-        res.status(500).json({ 
-          error: "Error serving frontend",
-          message: "Frontend files not accessible"
-        });
-      }
-    });
-  } catch (error) {
-    console.error("❌ Error configurando frontend:", error);
-    frontendFound = false;
-  }
-}
-
-// --- RUTA POR DEFECTO PARA API-ONLY ---
-if (!frontendFound) {
-  app.get("/", (req, res) => {
-    res.json({ 
-      message: "🚀 API Hoja de Vida funcionando",
-      status: "OK",
-      mode: "API-only",
-      timestamp: new Date().toISOString(),
-      endpoints: {
-        usuarios: "/api/usuarios",
-        login: "/api/login", 
-        datosPersonales: "/api/datos-personales",
-        formacionAcademica: "/api/formacion-academica",
-        experiencia: "/api/experiencia",
-        hojaCompleta: "/api/hoja-de-vida",
-        pdf: "/api/pdf"
-      }
-    });
   });
+});
 
-  // Ruta catch-all para APIs no encontradas
-  app.get("*", (req, res) => {
-    res.status(404).json({ 
-      error: "Endpoint no encontrado",
-      message: `La ruta ${req.path} no existe`,
-      availableEndpoints: [
-        "/api/usuarios",
-        "/api/login",
-        "/api/datos-personales",
-        "/api/formacion-academica",
-        "/api/experiencia"
-      ]
-    });
-  });
-}
-
-// --- MANEJO DE ERRORES ---
-app.use((error, req, res, next) => {
-  console.error("❌ Server Error:", error);
-  res.status(500).json({
-    error: "Internal Server Error",
-    message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+// --- MANEJO DE 404 ---
+app.use("*", (req, res) => {
+  res.status(404).json({ 
+    error: "Endpoint no encontrado",
+    path: req.originalUrl,
+    method: req.method,
+    availableEndpoints: [
+      "/api/usuarios",
+      "/api/login",
+      "/api/datos-personales",
+      "/api/formacion-academica",
+      "/api/hoja-vida",
+      "/api/experiencia",
+      "/api/pdf"
+    ]
   });
 });
 
@@ -151,8 +93,8 @@ const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ Servidor funcionando en puerto ${PORT}`);
-  console.log(`🌐 Modo: ${frontendFound ? 'Fullstack' : 'API-only'}`);
-  console.log(`📡 Health check: http://localhost:${PORT}/`);
+  console.log(`🌐 Modo: API-only`);
+  console.log(`📡 Endpoints disponibles en: https://tu-app.herokuapp.com/`);
 }).on('error', (err) => {
   console.error('❌ Error iniciando servidor:', err);
   process.exit(1);
