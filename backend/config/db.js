@@ -1,53 +1,51 @@
-// config/db.js
+// backend/config/db.js
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 const connectDB = async () => {
-  const uri = process.env.MONGO_URI;
-
-  // Validación previa del URI
-  if (!uri) {
-    console.error(`[${new Date().toISOString()}] ❌ URI de MongoDB no definida. Verifica tu archivo .env`);
-    process.exit(1);
-  }
-
   try {
-    await mongoose.connect(uri, {
+    console.log('🔄 Intentando conectar a MongoDB...');
+    console.log('📡 URI:', process.env.MONGO_URI ? 'URI configurada ✅' : 'URI faltante ❌');
+
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
 
-    const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] ✅ MongoDB conectado con éxito`);
-  } catch (err) {
-    const timestamp = new Date().toISOString();
-    console.error(`[${timestamp}] ❌ Error al conectar MongoDB: ${err.message}`);
-    process.exit(1); // Opcional: detener ejecución si falla la conexión
-  }
+    console.log(`✅ MongoDB conectado: ${conn.connection.host}`);
+    console.log(`📊 Base de datos: ${conn.connection.name}`);
+    console.log(`🔗 Estado de conexión: ${conn.connection.readyState === 1 ? 'Conectado' : 'Desconectado'}`);
+    
+    // Manejar eventos de conexión
+    mongoose.connection.on('error', (err) => {
+      console.error('❌ Error de conexión MongoDB:', err);
+    });
 
-  // Manejo de errores en tiempo real
-  mongoose.connection.on('error', err => {
-    const timestamp = new Date().toISOString();
-    console.error(`[${timestamp}] ❌ Error en la conexión de MongoDB: ${err.message}`);
-  });
+    mongoose.connection.on('disconnected', () => {
+      console.log('⚠️ MongoDB desconectado');
+    });
+
+    // Graceful shutdown
+    process.on('SIGINT', async () => {
+      await mongoose.connection.close();
+      console.log('🔌 Conexión MongoDB cerrada debido a terminación de la aplicación');
+      process.exit(0);
+    });
+
+  } catch (error) {
+    console.error('❌ Error conectando a MongoDB:', error.message);
+    console.error('📝 Stack:', error.stack);
+    
+    // En desarrollo, salir del proceso
+    if (process.env.NODE_ENV !== 'production') {
+      process.exit(1);
+    }
+    
+    // En producción, intentar reconexión después de 5 segundos
+    setTimeout(connectDB, 5000);
+  }
 };
 
 export default connectDB;
-
-
-
-
-/**import mongoose from 'mongoose';
-
-const connectDB = async () => {
-  try {
-    await mongoose.connect('mongodb+srv://randysimancamercado2:Valeria1324@clustermiapp.z0bbfnk.mongodb.net/baseDeDatosHV');
-    console.log('Servidor corriendo en el puerto 3000 con exito //db.js');
-    console.log('✅ MongoDB conectado');
-  } catch (err) {
-    console.error('❌ Error al conectar MongoDB:', err.message);
-  }
-};
-
-export default connectDB;*/
