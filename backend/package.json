@@ -2,18 +2,15 @@
   "name": "hoja-vida-backend",
   "version": "1.0.0",
   "type": "module",
-  "main": "app.js", // ✅ Cambiar a app.js
+  "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "build": "cd frontend && npm install && npm run build", // ✅ Añadir build
-    "heroku-postbuild": "npm run build", // ✅ Script para Heroku
-    "init-codigos": "node scripts/inicializarCodigos.js",
-    "crear-admin": "node scripts/crearAdmin.js"
+    "heroku-postbuild": "cd ../frontend && npm install && npm run build"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "cors": "^2.8.5", // ✅ Asegurar que cors está incluido
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-validator": "^7.1.0",
