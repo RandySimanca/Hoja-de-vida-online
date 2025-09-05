@@ -6,7 +6,7 @@
   "type": "module",
   "main": "backend/app.js",
   "scripts": {
-    "start": "node backend/app.js",
+    "start": "node app",
     "dev": "nodemon backend/app.js",
     "server": "node backend/server.js",
     "build": "echo 'API no requiere build process'",
