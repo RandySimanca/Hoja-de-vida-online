@@ -133,36 +133,13 @@ app.use((error, req, res, next) => {
 // --- INICIAR SERVIDOR ---
 const PORT = process.env.PORT || 4000;
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, function () 
+  {
   console.log('\n🎉 ================================');
   console.log('✅ SERVIDOR INICIADO EXITOSAMENTE');
-  console.log('🎉 ================================');
-  console.log(`🌐 Puerto: ${PORT}`);
-  console.log(`📡 Entorno: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 URL local: http://localhost:${PORT}`);
-  if (process.env.NODE_ENV === 'production') {
-    console.log(`🌍 URL producción: https://tu-app-heroku.herokuapp.com`);
-  }
-  console.log(`📋 Documentación: http://localhost:${PORT}/`);
-  console.log(`❤️  Estado: http://localhost:${PORT}/health`);
-  console.log('🎉 ================================\n');
-}).on('error', (err) => {
-  console.error('❌ Error iniciando el servidor:', err);
-  if (err.code === 'EADDRINUSE') {
-    console.error(`💥 El puerto ${PORT} ya está en uso`);
-  }
-  process.exit(1);
-});
+  console.log(`🌐 Puerto: ${PORT}`);  
+})
+     
 
-// --- MANEJO DE SEÑALES DEL SISTEMA ---
-process.on('SIGTERM', () => {
-  console.log('🔄 Señal SIGTERM recibida. Cerrando servidor gracefully...');
-  process.exit(0);
-});
-
-process.on('SIGINT', () => {
-  console.log('🔄 Señal SIGINT recibida. Cerrando servidor...');
-  process.exit(0);
-});
 
 export default app;
