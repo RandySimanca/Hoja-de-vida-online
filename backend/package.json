@@ -1,47 +1,27 @@
-
 {
-  "name": "hoja-de-vida-online",
+  "name": "hoja-vida-backend",
   "version": "1.0.0",
-  "description": "API para hoja de vida online con Node.js, Express y MongoDB",
   "type": "module",
-  "main": "backend/app.js",
+  "main": "app.js", // ✅ Cambiar a app.js
   "scripts": {
-    "start": "node app",
-    "dev": "nodemon backend/app.js",
-    "server": "node backend/server.js",
-    "build": "echo 'API no requiere build process'",
-    "heroku-postbuild": "echo 'Backend API deployed successfully'"
-  },
-  "engines": {
-    "node": "18.x",
-    "npm": "9.x"
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "build": "cd frontend && npm install && npm run build", // ✅ Añadir build
+    "heroku-postbuild": "npm run build", // ✅ Script para Heroku
+    "init-codigos": "node scripts/inicializarCodigos.js",
+    "crear-admin": "node scripts/crearAdmin.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "mongoose": "^7.5.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "jsonwebtoken": "^9.0.2",
     "bcryptjs": "^2.4.3",
-    "express-validator": "^7.0.1",
-    "pdfkit": "^0.13.0"
+    "cors": "^2.8.5", // ✅ Asegurar que cors está incluido
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-validator": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.1",
+    "pdfkit": "^0.15.0"
   },
-  "devDependencies": {
-    "nodemon": "^3.0.1"
-  },
-  "keywords": [
-    "cv",
-    "resume",
-    "api",
-    "nodejs",
-    "express",
-    "mongodb",
-    "heroku"
-  ],
-  "author": "Randy Simanca",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/RandySimanca/Hoja-de-vida-online.git"
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
